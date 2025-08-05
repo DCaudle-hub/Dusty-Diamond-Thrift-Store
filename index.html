@@ -172,18 +172,25 @@
             border-radius: 0;
             text-align: center;
             border: none;
-            display: none;
             backdrop-filter: blur(20px);
             z-index: 1000;
             overflow-y: auto;
-            display: flex;
+            display: none;
+        }
+        
+        .start-screen.show {
+            display: flex !important;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
         }
         
-        .start-screen {
-            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
+        .game-over.show, .level-complete.show {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         
         .start-screen h2 {
@@ -226,11 +233,16 @@
         }
         
         .start-btn {
-            background: linear-gradient(45deg, #4ade80, #22c55e);
-            color: white;
-            font-size: 24px;
-            padding: 25px 50px;
+            background: linear-gradient(45deg, #4ade80, #22c55e) !important;
+            color: white !important;
+            font-size: 28px !important;
+            padding: 30px 60px !important;
             animation: pulse 2s infinite;
+            border: 3px solid #fff !important;
+            box-shadow: 0 0 30px rgba(74, 222, 128, 0.8) !important;
+            margin-top: 40px !important;
+            display: block !important;
+            visibility: visible !important;
         }
         
         @keyframes pulse {
@@ -1418,9 +1430,19 @@
             document.getElementById('combo').textContent = combo;
         }
         
+        function showStartScreen() {
+            const startScreen = document.getElementById('startScreen');
+            startScreen.style.display = 'flex';
+            startScreen.classList.add('show');
+            gameStarted = false;
+            gameRunning = false;
+        }
+        
         function startGame() {
             // Hide start screen
-            document.getElementById('startScreen').style.display = 'none';
+            const startScreen = document.getElementById('startScreen');
+            startScreen.style.display = 'none';
+            startScreen.classList.remove('show');
             
             // Initialize audio
             initAudio();
@@ -1436,13 +1458,24 @@
             gameLoop();
         }
         
+        function gameOver() {
+            gameRunning = false;
+            const gameOverScreen = document.getElementById('gameOver');
+            gameOverScreen.classList.add('show');
+            gameOverScreen.style.display = 'flex';
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalLevel').textContent = level;
+        }
+        
         function levelComplete() {
             gameRunning = false;
             const bonusPoints = health * 30 + combo * 5;
             score += bonusPoints;
             playSound('levelup');
+            const levelCompleteScreen = document.getElementById('levelComplete');
+            levelCompleteScreen.classList.add('show');
+            levelCompleteScreen.style.display = 'flex';
             document.getElementById('bonusPoints').textContent = bonusPoints;
-            document.getElementById('levelComplete').style.display = 'block';
         }
         
         function nextLevel() {
@@ -1452,14 +1485,9 @@
             init();
             gameRunning = true;
             updateDisplay();
-            document.getElementById('levelComplete').style.display = 'none';
-        }
-        
-        function gameOver() {
-            gameRunning = false;
-            document.getElementById('finalScore').textContent = score;
-            document.getElementById('finalLevel').textContent = level;
-            document.getElementById('gameOver').style.display = 'block';
+            const levelCompleteScreen = document.getElementById('levelComplete');
+            levelCompleteScreen.style.display = 'none';
+            levelCompleteScreen.classList.remove('show');
         }
         
         function restartGame() {
@@ -1477,7 +1505,9 @@
             init();
             updateDisplay();
             
-            document.getElementById('gameOver').style.display = 'none';
+            const gameOverScreen = document.getElementById('gameOver');
+            gameOverScreen.style.display = 'none';
+            gameOverScreen.classList.remove('show');
             document.getElementById('powerUpIndicator').style.display = 'none';
         }
         
@@ -1603,26 +1633,34 @@
         
         // Initialize
         function showStartScreen() {
-            document.getElementById('startScreen').style.display = 'flex';
+            const startScreen = document.getElementById('startScreen');
+            startScreen.style.display = 'flex';
+            startScreen.classList.add('show');
             gameStarted = false;
             gameRunning = false;
         }
         
         // Window load handler for iPhone
         window.addEventListener('load', () => {
-            resizeCanvas();
-            showStartScreen();
+            setTimeout(() => {
+                resizeCanvas();
+                showStartScreen();
+            }, 100);
         });
         
         // Document ready fallback
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
-                resizeCanvas();
-                showStartScreen();
+                setTimeout(() => {
+                    resizeCanvas();
+                    showStartScreen();
+                }, 100);
             });
         } else {
-            resizeCanvas();
-            showStartScreen();
+            setTimeout(() => {
+                resizeCanvas();
+                showStartScreen();
+            }, 100);
         }
     </script>
 </body>
