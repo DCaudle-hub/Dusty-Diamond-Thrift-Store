@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- head content unchanged ... -->
+</head>
+<body>
+    <!-- body content unchanged ... -->
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Responsive canvas setup
+        function resizeCanvas() {
+            const container = document.querySelector('.canvas-container');
+            const rect = container.getBoundingClientRect();
+            const maxWidth  = Math.min(rect.width - 20, 450);
+            const maxHeight = Math.min(rect.height - 20, 400);
+            // Maintain aspect ratio
+            const aspectRatio = 9 / 7;
+            let canvasWidth  = maxWidth;
+            let canvasHeight = maxWidth / aspectRatio;
+            if (canvasHeight > maxHeight) {
+                canvasHeight = maxHeight;
+                canvasWidth  = maxHeight * aspectRatio;
+            }
+            canvas.width  = canvasWidth;
+            canvas.height = canvasHeight;
+            canvas.style.width  = canvasWidth + 'px';
+            canvas.style.height = canvasHeight + 'px';
+        }
+
+        // Game state variables (unchanged) ...
+        // [score, level, health, items, customers, powerUps, particles, etc.]
+
+        // Audio system, player, maze generation, particle system, 
+        // item/customer/power-up generation, collision detection, etc.
+        // [all unchanged functions here]
+
+        // Provide a safe start position for the player.
+        function findSafeStartPosition() {
+            const positions = [
+                { x: canvas.width * 0.1, y: canvas.height * 0.1 },
+                { x: canvas.width * 0.1, y: canvas.height * 0.9 },
+                { x: canvas.width * 0.9, y: canvas.height * 0.1 },
+                { x: canvas.width * 0.5, y: canvas.height * 0.1 },
+                { x: canvas.width * 0.05, y: canvas.height * 0.5 }
+            ];
+            for (let pos of positions) {
+                if (!checkWallCollision({ x: pos.x, y: pos.y, size: player.size })) {
+                    return pos;
+                }
+            }
+            // Fallback to a default position
+            return { x: 50, y: 50 };
+        }
+
+        // Initialize the game for a new level or restart.
+        function init() {
+            resizeCanvas();
+            walls = generateMaze();
+            generateItems();
+            generateCustomers();
+            generatePowerUps();
+            // Reposition the player safely and reset other state as needed
+            const start = findSafeStartPosition();
+            player.x = start.x;
+            player.y = start.y;
+            player.direction = { x: 0, y: 0 };
+        }
+
+        // The rest of your code — generateItems, generateCustomers,
+        // generatePowerUps, checkCollision, updatePlayer, etc. — remains unchanged.
+
+        // Set up initial canvas size and show start screen
+        resizeCanvas();
+        document.getElementById('startScreen').style.display = 'block';
+    </script>
+</body>
+</html>
