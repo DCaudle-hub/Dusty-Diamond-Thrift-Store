@@ -205,20 +205,43 @@
             background: linear-gradient(45deg, #ffd700, #ffed4a);
             color: #1a1a2e;
             border: none;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 16px;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 25px;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
             touch-action: manipulation;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 200px;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .restart-btn:active, .continue-btn:active, .start-btn:active {
             transform: scale(0.95);
-            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
+        }
+        
+        .start-btn {
+            background: linear-gradient(45deg, #4ade80, #22c55e);
+            color: white;
+            font-size: 24px;
+            padding: 25px 50px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 12px 35px rgba(74, 222, 128, 0.6);
+            }
         }
         
         .power-up-indicator {
@@ -304,7 +327,8 @@
         <p>• <span style="color: #f97316;">Darrens</span> (orange) - Entitled and rude</p>
         <p>• <span style="color: #a855f7;">Thieves</span> (purple) - Fast and sneaky</p>
         <p>📈 Each level adds more customers and new store layouts!</p>
-        <button class="start-btn" onclick="startGame()">Start Game</button>
+        <p style="margin-top: 30px; font-size: 1.2em; color: #4ade80;"><strong>👆 Tap to Play! 👆</strong></p>
+        <button class="start-btn" onclick="startGame()">START GAME</button>
     </div>
     
     <div class="game-over" id="gameOver">
