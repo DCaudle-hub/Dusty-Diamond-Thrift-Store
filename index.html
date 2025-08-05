@@ -2,6 +2,921 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Dusty Diamond">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>The Dusty Diamond</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            height: 100vh;
+            height: -webkit-fill-available;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
+            font-family: 'Arial', sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+        }
+        
+        .game-container {
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+            width: 95vw;
+            max-width: 500px;
+            height: 95vh;
+            height: calc(100vh - 20px);
+            height: calc(100dvh - 20px);
+            max-height: 700px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        h1 {
+            text-align: center;
+            margin: 5px 0;
+            background: linear-gradient(45deg, #ffd700, #ffed4a, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3)); }
+            to { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
+        }
+        
+        .game-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-bottom: 10px;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .score { 
+            color: #4ade80; 
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+        .level { 
+            color: #60a5fa;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+        .health { 
+            color: #f87171;
+            text-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
+        }
+        .combo {
+            color: #a855f7;
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+        
+        .canvas-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        canvas {
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f23 100%);
+            max-width: 100%;
+            max-height: 100%;
+            touch-action: none;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .controls {
+            margin-top: 10px;
+            text-align: center;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            opacity: 0.8;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            line-height: 1.3;
+        }
+        
+        .touch-controls {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.8;
+            z-index: 100;
+        }
+        
+        .arrow-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 8px;
+            width: 140px;
+            height: 140px;
+        }
+        
+        .arrow-btn {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 12px;
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            user-select: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.1s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+        }
+        
+        .arrow-btn:active {
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+            border-color: rgba(255, 215, 0, 0.8);
+        }
+        
+        .arrow-btn.up { 
+            grid-column: 2; 
+            grid-row: 1;
+        }
+        .arrow-btn.left { 
+            grid-column: 1; 
+            grid-row: 2;
+        }
+        .arrow-btn.right { 
+            grid-column: 3; 
+            grid-row: 2;
+        }
+        .arrow-btn.down { 
+            grid-column: 2; 
+            grid-row: 3;
+        }
+        
+        .control-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .game-over, .level-complete, .start-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 3px solid #ffd700;
+            display: none;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            max-width: 90vw;
+        }
+        
+        .restart-btn, .continue-btn, .start-btn {
+            background: linear-gradient(45deg, #ffd700, #ffed4a);
+            color: #1a1a2e;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            touch-action: manipulation;
+        }
+        
+        .restart-btn:active, .continue-btn:active, .start-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .power-up-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            display: none;
+            z-index: 10;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+        
+        .shake {
+            animation: shake 0.3s ease-in-out;
+        }
+        
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 8px;
+                border-radius: 10px;
+                width: 98vw;
+                height: 98vh;
+                height: calc(100dvh - 10px);
+            }
+            
+            .arrow-controls {
+                width: 120px;
+                height: 120px;
+                gap: 6px;
+            }
+            
+            .arrow-btn {
+                font-size: 20px;
+                border-radius: 10px;
+            }
+            
+            .control-label {
+                font-size: 11px;
+            }
+        }
+        
+        @media (max-width: 375px) {
+            .arrow-controls {
+                width: 110px;
+                height: 110px;
+                gap: 5px;
+            }
+            
+            .arrow-btn {
+                font-size: 18px;
+                border-radius: 8px;
+            }
+        }
+        
+        /* iPhone-specific optimizations */
+        @media only screen and (device-width: 375px) and (device-height: 667px),
+               only screen and (device-width: 414px) and (device-height: 736px),
+               only screen and (device-width: 375px) and (device-height: 812px),
+               only screen and (device-width: 414px) and (device-height: 896px),
+               only screen and (device-width: 390px) and (device-height: 844px),
+               only screen and (device-width: 428px) and (device-height: 926px) {
+            .game-container {
+                height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 10px);
+                height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 10px);
+            }
+            
+            .touch-controls {
+                bottom: calc(15px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>💎 The Dusty Diamond 💎</h1>
+        
+        <div class="game-info">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div class="level">Level: <span id="level">1</span></div>
+            <div class="health">Health: <span id="health">❤️❤️❤️</span></div>
+            <div class="combo">Combo: <span id="combo">0</span>x</div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="gameCanvas"></canvas>
+            
+            <div class="power-up-indicator" id="powerUpIndicator">
+                Power-up Active!
+            </div>
+        </div>
+        
+        <div class="controls">
+            Swipe canvas or use arrow buttons to move • Clean all items to advance<br>
+            Each level brings new store layouts and more customers!<br>
+            💨 Speed • 🛡️ Shield • ⚡ Lightning • 🌟 Star
+        </div>
+        
+        <div class="touch-controls">
+            <div class="arrow-controls">
+                <button class="arrow-btn up" data-direction="up">▲</button>
+                <button class="arrow-btn left" data-direction="left">◄</button>
+                <button class="arrow-btn right" data-direction="right">►</button>
+                <button class="arrow-btn down" data-direction="down">▼</button>
+            </div>
+            <div class="control-label">Tap arrows to move diamond</div>
+        </div>
+    </div>
+    
+    <div class="start-screen" id="startScreen">
+        <h2>🎮 Welcome to The Dusty Diamond! 🎮</h2>
+        <p>Clean your store while avoiding troublesome customers!</p>
+        <p>🟢 Good customers smile and are harmless</p>
+        <p>🔴 Bad customers frown and will hurt you</p>
+        <p>📈 Each level adds more customers and new store layouts!</p>
+        <button class="start-btn" onclick="startGame()">Start Game</button>
+    </div>
+    
+    <div class="game-over" id="gameOver">
+        <h2>🏪 Store Closed! 🏪</h2>
+        <p>The troublesome customers won!</p>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <p>Level Reached: <span id="finalLevel">1</span></p>
+        <button class="restart-btn" onclick="restartGame()">Reopen Store</button>
+    </div>
+    
+    <div class="level-complete" id="levelComplete">
+        <h2>🌟 Level Complete! 🌟</h2>
+        <p>Store successfully cleaned!</p>
+        <p>Bonus Points: <span id="bonusPoints">0</span></p>
+        <button class="continue-btn" onclick="nextLevel()">Next Level</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Prevent iOS scrolling and zoom
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.closest('.arrow-btn') || e.target.closest('canvas')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        document.addEventListener('gesturestart', (e) => {
+            e.preventDefault();
+        });
+        
+        // Responsive canvas setup optimized for iPhone
+        function resizeCanvas() {
+            const container = document.querySelector('.canvas-container');
+            const rect = container.getBoundingClientRect();
+            
+            // Account for arrow controls at the bottom
+            const maxWidth = Math.min(rect.width - 20, 450);
+            const maxHeight = Math.min(rect.height - 60, 400); // Extra space for controls
+            
+            // Maintain aspect ratio
+            const aspectRatio = 9/7;
+            let canvasWidth = maxWidth;
+            let canvasHeight = maxWidth / aspectRatio;
+            
+            if (canvasHeight > maxHeight) {
+                canvasHeight = maxHeight;
+                canvasWidth = maxHeight * aspectRatio;
+            }
+            
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            canvas.style.width = canvasWidth + 'px';
+            canvas.style.height = canvasHeight + 'px';
+        }
+        
+        // Game state
+        let gameRunning = false;
+        let gameStarted = false;
+        let score = 0;
+        let level = 1;
+        let health = 3;
+        let combo = 0;
+        let comboTimer = 0;
+        let items = [];
+        let customers = [];
+        let powerUps = [];
+        let particles = [];
+        let screenShake = 0;
+        let activePowerUp = null;
+        let powerUpTimer = 0;
+        let audioContext = null;
+        let soundEnabled = false;
+        
+        // Audio system with error handling
+        function initAudio() {
+            try {
+                if (typeof Tone !== 'undefined') {
+                    Tone.start().then(() => {
+                        soundEnabled = true;
+                    }).catch(() => {
+                        soundEnabled = false;
+                    });
+                }
+            } catch(e) {
+                soundEnabled = false;
+            }
+        }
+        
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                let frequency = 440;
+                let duration = 0.1;
+                
+                switch(type) {
+                    case 'collect':
+                        frequency = 800;
+                        duration = 0.1;
+                        break;
+                    case 'powerup':
+                        frequency = 600;
+                        duration = 0.2;
+                        break;
+                    case 'hit':
+                        frequency = 200;
+                        duration = 0.3;
+                        break;
+                    case 'levelup':
+                        frequency = 1000;
+                        duration = 0.5;
+                        break;
+                }
+                
+                oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + duration);
+            } catch(e) {
+                // Silent fail for audio errors
+            }
+        }
+        
+        // Player
+        const player = {
+            x: 50,
+            y: 50,
+            size: 18,
+            speed: 4,
+            direction: { x: 0, y: 0 },
+            trail: [],
+            invulnerable: false,
+            invulnerableTimer: 0
+        };
+        
+        // Store maze generation with level variations
+        function generateMaze() {
+            const walls = [
+                // Outer walls
+                {x: 0, y: 0, width: canvas.width, height: 15},
+                {x: 0, y: canvas.height - 15, width: canvas.width, height: 15},
+                {x: 0, y: 0, width: 15, height: canvas.height},
+                {x: canvas.width - 15, y: 0, width: 15, height: canvas.height}
+            ];
+            
+            try {
+                const wallThickness = Math.max(12, canvas.width * 0.025);
+                const mazeType = (level - 1) % 5; // 5 different maze patterns
+                
+                switch(mazeType) {
+                    case 0: // Simple aisles (Level 1, 6, 11...)
+                        generateSimpleAisles(walls, wallThickness);
+                        break;
+                    case 1: // Cross pattern (Level 2, 7, 12...)
+                        generateCrossPattern(walls, wallThickness);
+                        break;
+                    case 2: // Spiral layout (Level 3, 8, 13...)
+                        generateSpiralLayout(walls, wallThickness);
+                        break;
+                    case 3: // Grid maze (Level 4, 9, 14...)
+                        generateGridMaze(walls, wallThickness);
+                        break;
+                    case 4: // Complex store (Level 5, 10, 15...)
+                        generateComplexStore(walls, wallThickness);
+                        break;
+                    default:
+                        generateSimpleAisles(walls, wallThickness);
+                        break;
+                }
+            } catch(e) {
+                // Fallback to simple layout if any maze generation fails
+                generateSimpleAisles(walls, 15);
+            }
+            
+            return walls;
+        }
+        
+        function generateSimpleAisles(walls, wallThickness) {
+            try {
+                // Simple store aisles - easy navigation
+                const aisleWidth = canvas.height * 0.15;
+                const aisleCount = Math.min(3, Math.floor(level / 2) + 1);
+                
+                for (let i = 1; i <= aisleCount; i++) {
+                    const y = (canvas.height / (aisleCount + 1)) * i;
+                    
+                    // Left aisle
+                    walls.push({
+                        x: canvas.width * 0.15,
+                        y: y - aisleWidth/2,
+                        width: canvas.width * 0.25,
+                        height: wallThickness
+                    });
+                    
+                    // Right aisle
+                    walls.push({
+                        x: canvas.width * 0.6,
+                        y: y - aisleWidth/2,
+                        width: canvas.width * 0.25,
+                        height: wallThickness
+                    });
+                }
+            } catch(e) {
+                // Simple fallback aisle
+                walls.push({
+                    x: canvas.width * 0.2,
+                    y: canvas.height * 0.4,
+                    width: canvas.width * 0.6,
+                    height: wallThickness
+                });
+            }
+        }
+        
+        function generateCrossPattern(walls, wallThickness) {
+            try {
+                // Cross-shaped store layout
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                
+                // Horizontal corridor
+                walls.push({
+                    x: canvas.width * 0.2,
+                    y: centerY - canvas.height * 0.15,
+                    width: canvas.width * 0.6,
+                    height: wallThickness
+                });
+                walls.push({
+                    x: canvas.width * 0.2,
+                    y: centerY + canvas.height * 0.15,
+                    width: canvas.width * 0.6,
+                    height: wallThickness
+                });
+                
+                // Vertical corridor
+                walls.push({
+                    x: centerX - canvas.width * 0.15,
+                    y: canvas.height * 0.2,
+                    width: wallThickness,
+                    height: canvas.height * 0.6
+                });
+                walls.push({
+                    x: centerX + canvas.width * 0.15,
+                    y: canvas.height * 0.2,
+                    width: wallThickness,
+                    height: canvas.height * 0.6
+                });
+            } catch(e) {
+                generateSimpleAisles(walls, wallThickness);
+            }
+        }
+        
+        function generateSpiralLayout(walls, wallThickness) {
+            try {
+                // Spiral store layout
+                const layers = Math.min(3, Math.floor(level / 2) + 1);
+                
+                for (let layer = 0; layer < layers; layer++) {
+                    const margin = (layer + 1) * (canvas.width * 0.1);
+                    const width = canvas.width - margin * 2;
+                    const height = canvas.height - margin * 2;
+                    
+                    if (width > wallThickness * 2 && height > wallThickness * 2) {
+                        // Top wall
+                        walls.push({
+                            x: margin,
+                            y: margin,
+                            width: width - wallThickness,
+                            height: wallThickness
+                        });
+                        
+                        // Right wall
+                        walls.push({
+                            x: margin + width - wallThickness,
+                            y: margin,
+                            width: wallThickness,
+                            height: height - wallThickness
+                        });
+                        
+                        // Bottom wall
+                        walls.push({
+                            x: margin + wallThickness,
+                            y: margin + height - wallThickness,
+                            width: width - wallThickness,
+                            height: wallThickness
+                        });
+                        
+                        // Left wall (with gap for entrance)
+                        if (layer === 0) {
+                            walls.push({
+                                x: margin,
+                                y: margin,
+                                width: wallThickness,
+                                height: height * 0.4
+                            });
+                            walls.push({
+                                x: margin,
+                                y: margin + height * 0.6,
+                                width: wallThickness,
+                                height: height * 0.4
+                            });
+                        } else {
+                            walls.push({
+                                x: margin,
+                                y: margin + wallThickness,
+                                width: wallThickness,
+                                height: height - wallThickness * 2
+                            });
+                        }
+                    }
+                }
+            } catch(e) {
+                generateSimpleAisles(walls, wallThickness);
+            }
+        }
+        
+        function generateGridMaze(walls, wallThickness) {
+            try {
+                // Grid-based store sections
+                const cols = Math.min(4, 2 + Math.floor(level / 3));
+                const rows = Math.min(3, 2 + Math.floor(level / 4));
+                const cellWidth = (canvas.width - wallThickness * 2) / cols;
+                const cellHeight = (canvas.height - wallThickness * 2) / rows;
+                
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        const x = wallThickness + col * cellWidth;
+                        const y = wallThickness + row * cellHeight;
+                        
+                        // Randomly place walls to create store sections
+                        if (Math.random() < 0.6 && (row > 0 || col > 0)) {
+                            if (Math.random() < 0.5) {
+                                // Vertical wall
+                                walls.push({
+                                    x: x + cellWidth * 0.3,
+                                    y: y,
+                                    width: wallThickness,
+                                    height: cellHeight * 0.7
+                                });
+                            } else {
+                                // Horizontal wall
+                                walls.push({
+                                    x: x,
+                                    y: y + cellHeight * 0.3,
+                                    width: cellWidth * 0.7,
+                                    height: wallThickness
+                                });
+                            }
+                        }
+                    }
+                }
+            } catch(e) {
+                generateSimpleAisles(walls, wallThickness);
+            }
+        }
+        
+        function generateComplexStore(walls, wallThickness) {
+            try {
+                // Complex store with multiple departments
+                const sections = [
+                    // Central checkout area
+                    {x: canvas.width * 0.4, y: canvas.height * 0.4, 
+                     width: canvas.width * 0.2, height: canvas.height * 0.2},
+                    
+                    // Corner departments
+                    {x: canvas.width * 0.1, y: canvas.height * 0.1, 
+                     width: canvas.width * 0.25, height: canvas.height * 0.25},
+                    {x: canvas.width * 0.65, y: canvas.height * 0.1, 
+                     width: canvas.width * 0.25, height: canvas.height * 0.25},
+                    {x: canvas.width * 0.1, y: canvas.height * 0.65, 
+                     width: canvas.width * 0.25, height: canvas.height * 0.25}
+                ];
+                
+                sections.forEach(section => {
+                    if (section.width > wallThickness * 2 && section.height > wallThickness * 2) {
+                        // Create department boundaries
+                        walls.push({x: section.x, y: section.y, width: section.width, height: wallThickness});
+                        walls.push({x: section.x, y: section.y + section.height, width: section.width, height: wallThickness});
+                        walls.push({x: section.x, y: section.y, width: wallThickness, height: section.height});
+                        walls.push({x: section.x + section.width, y: section.y, width: wallThickness, height: section.height});
+                        
+                        // Add internal shelving
+                        if (section.width > canvas.width * 0.15) {
+                            walls.push({
+                                x: section.x + section.width * 0.3,
+                                y: section.y + wallThickness,
+                                width: wallThickness,
+                                height: section.height * 0.6
+                            });
+                        }
+                    }
+                });
+            } catch(e) {
+                generateSimpleAisles(walls, wallThickness);
+            }
+        }
+        
+        let walls = [];
+        
+        // Particle system
+        class Particle {
+            constructor(x, y, color, velocity, life) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.velocity = velocity;
+                this.life = life;
+                this.maxLife = life;
+                this.size = Math.random() * 3 + 1;
+            }
+            
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.life--;
+                this.velocity.x *= 0.98;
+                this.velocity.y *= 0.98;
+                this.size *= 0.98;
+            }
+            
+            draw() {
+                const alpha = this.life / this.maxLife;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        function createParticles(x, y, color, count = 6) {
+            for (let i = 0; i < count; i++) {
+                const velocity = {
+                    x: (Math.random() - 0.5) * 8,
+                    y: (Math.random() - 0.5) * 8
+                };
+                particles.push(new Particle(x, y, color, velocity, 20));
+            }
+        }
+        
+        // Customer class
+        class Customer {
+            constructor(x, y, type) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.max(12, canvas.width * 0.025);
+                this.type = type;
+                this.lastHit = 0;
+                this.targetPlayer = type.harmful && Math.random() < 0.3;
+                this.pathfindingTimer = 0;
+                
+                if (this.targetPlayer) {
+                    this.speed = type.speed * 0.8;
+                } else {
+                    this.speed = type.speed;
+                    this.direction = { 
+                        x: (Math.random() - 0.5) * 2, 
+                        y: (Math.random() - 0.5) * 2 
+                    };
+                }
+            }
+            
+            update() {
+                if (this.targetPlayer) {
+                    const dx = player.x - this.x;
+                    const dy = player.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 0) {
+                        this.direction = {
+                            x: dx / distance,
+                            y: dy / distance
+                        };
+                    }
+                } else {
+                    this.pathfindingTimer++;
+                    if (this.pathfindingTimer > 40) {
+                        this.direction.x = (Math.random() - 0.5) * 2;
+                        this.direction.y = (Math.random() - 0.5) * 2;
+                        this.pathfindingTimer = 0;
+                    }
+                }
+                
+                const newX = this.x + this.direction.x * this.speed;
+                const newY = this.y + this.direction.y * this.speed;
+                
+                if (!checkWallCollision({x: newX, y: this.y, size: this.size})) {
+                    this.x = newX;
+                } else {
+                    this.direction.x *= -1;
+                }
+                
+                if (!checkWallCollision({x: this.x, y: newY, size: this.size})) {
+                    this.y = newY;
+                } else {
+                    this.direction.y *= -1;
+                }
+                
+                // Boundary collision
+                if (this.x <= this.size || this.x >= canvas.width - this.size) {
+                    this.direction.x *= -1;
+                }
+                if (this.y <= this.size || this.y >= canvas.height - this.size) {
+                    this.direction.y *= -1;
+                }
+            }
+            
+            draw() {
+                try {
+                    // Body
+                    ctx.fillStyle = this.type.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Eyes
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath();
+                    ctx.arc(this.x - this.size * 0.3, this.y - this.size * 0.2, this.size * 0.15, 0, Math.PI * 2);
+                    ctx.arc(this.x + this.size * 0.3, this.y - this.size * 0.2, this.size * 0.15, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Pupils
+                    ctx.fillStyle = 'black';
+                    ctx.beginPath();
+                    ctx.arc(this.x - this.size * 0.3, this.y - this.size * 0.2, this.size * 0.08, 0, Math.PI * 2);
+                    ctx.arc(this.x + this.size * 0.3, this.y - this.size * 0.2, this.size * 0.08, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Mouth
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    if (this.type.harmful) {
+                        // Frown for bad customers
+                        ctx.arc(this.x, this.y + this.size * 0.4, this.size * 0.25, 0.2 * Math.PI, 0.8 * Math.PI);
+                        
+                        // Angry eyebrows
+                        ctx.moveTo(this.x - this.size * 0.4, this.y - this.size * 0.4);
+                        ctx.lineTo(this.x - this.size * 0.1, this.y - this.size * 0.3);
+     <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>The Dusty Diamond</title>
     <style>
