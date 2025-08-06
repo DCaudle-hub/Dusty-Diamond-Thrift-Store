@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Dusty Diamond</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Dusty Diamond">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>The Dusty Diamond - Revolutionary Edition</title>
     <style>
         * {
             margin: 0;
@@ -11,146 +15,139 @@
             box-sizing: border-box;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         
-        body {
-            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
-            font-family: 'Arial', sans-serif;
-            color: white;
+        html, body {
+            height: 100%;
+            height: 100vh;
+            height: -webkit-fill-available;
             overflow: hidden;
             position: fixed;
             width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a, #1a1a2e, #2d1b69);
         }
         
         .game-container {
-            background: rgba(0, 0, 0, 0.9);
-            border-radius: 15px;
-            padding: 10px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            backdrop-filter: blur(10px);
-            width: 95vw;
-            max-width: 500px;
-            height: 95vh;
-            max-height: 700px;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
+            background: linear-gradient(135deg, #0a0a1a, #1a1a2e, #2d1b69);
+            overflow: hidden;
         }
         
-        h1 {
+        .hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 10px 20px;
+            z-index: 100;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hud-left {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .hud-center {
             text-align: center;
-            margin: 5px 0;
-            background: linear-gradient(45deg, #ffd700, #ffed4a, #fbbf24);
+        }
+        
+        .hud-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .hud-item {
+            color: white;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .score { color: #4ade80; }
+        .level { color: #60a5fa; }
+        .health { color: #f87171; }
+        .combo { color: #a855f7; }
+        
+        .game-title {
+            background: linear-gradient(45deg, #ffd700, #ffed4a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3)); }
-            to { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
-        }
-        
-        .game-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px;
-            margin-bottom: 10px;
-            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            font-size: clamp(1rem, 3vw, 1.5rem);
             font-weight: bold;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            animation: titleGlow 3s ease-in-out infinite alternate;
         }
         
-        .score { 
-            color: #4ade80; 
-            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
-        }
-        .level { 
-            color: #60a5fa;
-            text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
-        }
-        .health { 
-            color: #f87171;
-            text-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
-        }
-        .combo {
-            color: #a855f7;
-            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-        }
-        
-        .canvas-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+        @keyframes titleGlow {
+            from { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3)); }
+            to { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)); }
         }
         
         canvas {
-            border: 2px solid #ffd700;
-            border-radius: 10px;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f23 100%);
-            max-width: 100%;
-            max-height: 100%;
-            touch-action: none;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a1a 100%);
         }
         
         .controls {
-            margin-top: 10px;
-            text-align: center;
-            font-size: clamp(0.7rem, 2vw, 0.9rem);
-            opacity: 0.8;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-            line-height: 1.3;
-        }
-        
-        .touch-controls {
             position: absolute;
-            bottom: 10px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            opacity: 0.7;
+            z-index: 100;
         }
         
         .dpad {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             grid-template-rows: 1fr 1fr 1fr;
-            gap: 2px;
-            width: 120px;
-            height: 120px;
+            gap: 8px;
+            width: 140px;
+            height: 140px;
         }
         
         .dpad-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: white;
+            background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border: 2px solid rgba(255,215,0,0.4);
+            border-radius: 15px;
+            color: #ffd700;
             font-size: 20px;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
             touch-action: manipulation;
-            user-select: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.1s ease;
+            cursor: pointer;
         }
         
         .dpad-btn:active {
-            background: rgba(255, 215, 0, 0.3);
+            background: linear-gradient(145deg, rgba(255,215,0,0.3), rgba(255,215,0,0.1));
             transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(255,215,0,0.4);
+            border-color: rgba(255,215,0,0.8);
         }
         
         .dpad-btn.up { grid-column: 2; grid-row: 1; }
@@ -158,1509 +155,1654 @@
         .dpad-btn.right { grid-column: 3; grid-row: 2; }
         .dpad-btn.down { grid-column: 2; grid-row: 3; }
         
-        .game-over, .level-complete, .start-screen {
+        .start-screen {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            background: rgba(0, 0, 0, 0.95);
-            padding: 30px;
-            border-radius: 0;
-            text-align: center;
-            border: none;
-            backdrop-filter: blur(20px);
-            z-index: 1000;
-            overflow-y: auto;
+            background: linear-gradient(135deg, #0a0a1a, #1a1a2e, #2d1b69);
             display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            padding: 20px;
         }
         
         .start-screen.show {
             display: flex !important;
+        }
+        
+        .start-screen h1 {
+            font-size: clamp(2rem, 8vw, 4rem);
+            background: linear-gradient(45deg, #ffd700, #ffed4a, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .start-screen p {
+            color: white;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            margin-bottom: 15px;
+            line-height: 1.5;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .start-btn {
+            background: linear-gradient(45deg, #4ade80, #22c55e);
+            color: white;
+            border: 3px solid #fff;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: buttonPulse 2s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(74, 222, 128, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .start-btn:active {
+            transform: scale(0.95);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes buttonPulse {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(74, 222, 128, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 40px rgba(74, 222, 128, 0.8);
+                transform: scale(1.05);
+            }
+        }
+        
+        .power-indicator {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 200;
+        }
+        
+        .game-over, .level-complete {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
+            text-align: center;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 20px;
         }
         
         .game-over.show, .level-complete.show {
             display: flex !important;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
         
-        .start-screen h2 {
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
+        .game-over h2, .level-complete h2 {
+            font-size: clamp(1.5rem, 6vw, 3rem);
             margin-bottom: 20px;
             background: linear-gradient(45deg, #ffd700, #ffed4a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
-        .start-screen p {
-            font-size: clamp(0.9rem, 3vw, 1.1rem);
-            margin-bottom: 15px;
-            line-height: 1.4;
-            max-width: 90%;
-        }
-        
-        .restart-btn, .continue-btn, .start-btn {
+        .restart-btn, .continue-btn {
             background: linear-gradient(45deg, #ffd700, #ffed4a);
             color: #1a1a2e;
             border: none;
-            padding: 20px 40px;
-            border-radius: 15px;
-            font-size: 20px;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 25px;
-            transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
-            touch-action: manipulation;
+            margin-top: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            min-width: 200px;
-            -webkit-tap-highlight-color: transparent;
+            transition: all 0.3s ease;
         }
         
-        .restart-btn:active, .continue-btn:active, .start-btn:active {
+        .restart-btn:active, .continue-btn:active {
             transform: scale(0.95);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
-        }
-        
-        .start-btn {
-            background: linear-gradient(45deg, #4ade80, #22c55e) !important;
-            color: white !important;
-            font-size: 28px !important;
-            padding: 30px 60px !important;
-            animation: pulse 2s infinite;
-            border: 3px solid #fff !important;
-            box-shadow: 0 0 30px rgba(74, 222, 128, 0.8) !important;
-            margin-top: 40px !important;
-            display: block !important;
-            visibility: visible !important;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { 
-                transform: scale(1);
-                box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
-            }
-            50% { 
-                transform: scale(1.05);
-                box-shadow: 0 12px 35px rgba(74, 222, 128, 0.6);
-            }
-        }
-        
-        .power-up-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 12px;
-            display: none;
-            z-index: 10;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-3px); }
-            75% { transform: translateX(3px); }
-        }
-        
-        .shake {
-            animation: shake 0.3s ease-in-out;
         }
         
         @media (max-width: 480px) {
-            .game-container {
-                padding: 8px;
-                border-radius: 10px;
-            }
-            
             .dpad {
-                width: 100px;
-                height: 100px;
+                width: 120px;
+                height: 120px;
+                gap: 6px;
             }
             
             .dpad-btn {
-                font-size: 16px;
+                font-size: 18px;
+                border-radius: 12px;
             }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>💎 The Dusty Diamond 💎</h1>
-        
-        <div class="game-info">
-            <div class="score">Score: <span id="score">0</span></div>
-            <div class="level">Level: <span id="level">1</span></div>
-            <div class="health">Health: <span id="health">❤️❤️❤️</span></div>
-            <div class="combo">Combo: <span id="combo">0</span>x</div>
-        </div>
-        
-        <div class="canvas-container">
-            <canvas id="gameCanvas"></canvas>
-            
-            <div class="power-up-indicator" id="powerUpIndicator">
-                Power-up Active!
+        <div class="hud">
+            <div class="hud-left">
+                <div class="hud-item score">💰 <span id="score">0</span></div>
+                <div class="hud-item combo">🔥 <span id="combo">0</span>x</div>
+            </div>
+            <div class="hud-center">
+                <div class="game-title">💎 The Dusty Diamond 💎</div>
+            </div>
+            <div class="hud-right">
+                <div class="hud-item level">🏪 Level <span id="level">1</span></div>
+                <div class="hud-item health">❤️ <span id="health">❤️❤️❤️</span></div>
             </div>
         </div>
+        
+        <canvas id="gameCanvas"></canvas>
         
         <div class="controls">
-            Swipe or use D-pad to move • Clean all items to advance<br>
-            Each level brings new store layouts and more customers!<br>
-            💨 Speed • 🛡️ Shield • ⚡ Lightning • 🌟 Star
+            <div class="dpad">
+                <button class="dpad-btn up" data-direction="up">▲</button>
+                <button class="dpad-btn left" data-direction="left">◄</button>
+                <button class="dpad-btn right" data-direction="right">►</button>
+                <button class="dpad-btn down" data-direction="down">▼</button>
+            </div>
         </div>
         
-        <div class="touch-controls">
-            <div class="dpad">
-                <button class="dpad-btn up" data-direction="up">↑</button>
-                <button class="dpad-btn left" data-direction="left">←</button>
-                <button class="dpad-btn right" data-direction="right">→</button>
-                <button class="dpad-btn down" data-direction="down">↓</button>
-            </div>
+        <div class="power-indicator" id="powerIndicator">
+            Power-up Active!
         </div>
     </div>
     
     <div class="start-screen" id="startScreen">
-        <h2>🎮 Welcome to The Dusty Diamond! 🎮</h2>
-        <p>Clean your store while avoiding troublesome customers!</p>
-        <p>🟢 <strong>Good customers</strong> smile and are harmless</p>
-        <p>🔴 <strong>Bad customers</strong> frown and will hurt you:</p>
+        <h1>💎 The Dusty Diamond 💎</h1>
+        <p>🎮 Revolutionary Store Cleaning Adventure!</p>
+        <p>🟢 <strong>Good Customers:</strong> Smile and are harmless</p>
+        <p>🔴 <strong>Troublesome Customers:</strong></p>
         <p>• <span style="color: #ef4444;">Karens</span> (red) - Always complaining</p>
         <p>• <span style="color: #f97316;">Darrens</span> (orange) - Entitled and rude</p>
         <p>• <span style="color: #a855f7;">Thieves</span> (purple) - Fast and sneaky</p>
-        <p>📈 Each level adds more customers and new store layouts!</p>
-        <p style="margin-top: 30px; font-size: 1.2em; color: #4ade80;"><strong>👆 Tap to Play! 👆</strong></p>
-        <button class="start-btn" onclick="startGame()">START GAME</button>
+        <p>🚀 <strong>Features dynamic mazes, smart AI, and epic power-ups!</strong></p>
+        <button class="start-btn" onclick="Game.start()">🎯 Start Adventure</button>
     </div>
     
     <div class="game-over" id="gameOver">
-        <h2>🏪 Store Closed! 🏪</h2>
-        <p>The troublesome customers won!</p>
+        <h2>🏪 Store Closed!</h2>
+        <p>The troublesome customers overwhelmed you!</p>
         <p>Final Score: <span id="finalScore">0</span></p>
         <p>Level Reached: <span id="finalLevel">1</span></p>
-        <button class="restart-btn" onclick="restartGame()">Reopen Store</button>
+        <button class="restart-btn" onclick="Game.restart()">🔄 Reopen Store</button>
     </div>
     
     <div class="level-complete" id="levelComplete">
-        <h2>🌟 Level Complete! 🌟</h2>
+        <h2>🌟 Level Complete!</h2>
         <p>Store successfully cleaned!</p>
         <p>Bonus Points: <span id="bonusPoints">0</span></p>
-        <button class="continue-btn" onclick="nextLevel()">Next Level</button>
+        <button class="continue-btn" onclick="Game.nextLevel()">⭐ Next Challenge</button>
     </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Responsive canvas setup
-        function resizeCanvas() {
-            const container = document.querySelector('.canvas-container');
-            const rect = container.getBoundingClientRect();
-            const maxWidth = Math.min(rect.width - 20, 450);
-            const maxHeight = Math.min(rect.height - 20, 400);
+        // Revolutionary Game Engine
+        class Game {
+            static canvas = document.getElementById('gameCanvas');
+            static ctx = Game.canvas.getContext('2d');
+            static running = false;
+            static started = false;
             
-            // Maintain aspect ratio
-            const aspectRatio = 9/7;
-            let canvasWidth = maxWidth;
-            let canvasHeight = maxWidth / aspectRatio;
+            // Game State
+            static state = {
+                score: 0,
+                level: 1,
+                health: 3,
+                combo: 0,
+                comboTimer: 0
+            };
             
-            if (canvasHeight > maxHeight) {
-                canvasHeight = maxHeight;
-                canvasWidth = maxHeight * aspectRatio;
+            // Entities
+            static player = null;
+            static entities = {
+                items: [],
+                customers: [],
+                powerUps: [],
+                particles: []
+            };
+            
+            // Systems
+            static maze = null;
+            static camera = { shake: 0 };
+            static activePowerUp = null;
+            static powerUpTimer = 0;
+            static input = { direction: { x: 0, y: 0 } };
+            
+            static init() {
+                this.setupCanvas();
+                this.setupInput();
+                this.showStartScreen();
             }
             
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
-            canvas.style.width = canvasWidth + 'px';
-            canvas.style.height = canvasHeight + 'px';
-        }
-        
-        // Game state
-        let gameRunning = false;
-        let gameStarted = false;
-        let score = 0;
-        let level = 1;
-        let health = 3;
-        let combo = 0;
-        let comboTimer = 0;
-        let items = [];
-        let customers = [];
-        let powerUps = [];
-        let particles = [];
-        let screenShake = 0;
-        let activePowerUp = null;
-        let powerUpTimer = 0;
-        let audioContext = null;
-        let soundEnabled = false;
-        
-        // Audio system with error handling
-        function initAudio() {
-            try {
-                if (typeof Tone !== 'undefined') {
-                    Tone.start().then(() => {
-                        soundEnabled = true;
-                    }).catch(() => {
-                        soundEnabled = false;
-                    });
-                }
-            } catch(e) {
-                soundEnabled = false;
-            }
-        }
-        
-        function playSound(type) {
-            if (!soundEnabled) return;
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                let frequency = 440;
-                let duration = 0.1;
-                
-                switch(type) {
-                    case 'collect':
-                        frequency = 800;
-                        duration = 0.1;
-                        break;
-                    case 'powerup':
-                        frequency = 600;
-                        duration = 0.2;
-                        break;
-                    case 'hit':
-                        frequency = 200;
-                        duration = 0.3;
-                        break;
-                    case 'levelup':
-                        frequency = 1000;
-                        duration = 0.5;
-                        break;
-                }
-                
-                oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-                
-                oscillator.start(audioCtx.currentTime);
-                oscillator.stop(audioCtx.currentTime + duration);
-            } catch(e) {
-                // Silent fail for audio errors
-            }
-        }
-        
-        // Player
-        const player = {
-            x: 50,
-            y: 50,
-            size: 18,
-            speed: 4,
-            direction: { x: 0, y: 0 },
-            trail: [],
-            invulnerable: false,
-            invulnerableTimer: 0
-        };
-        
-        // Store maze generation with level variations
-        function generateMaze() {
-            const walls = [
-                // Outer walls
-                {x: 0, y: 0, width: canvas.width, height: 15},
-                {x: 0, y: canvas.height - 15, width: canvas.width, height: 15},
-                {x: 0, y: 0, width: 15, height: canvas.height},
-                {x: canvas.width - 15, y: 0, width: 15, height: canvas.height}
-            ];
-            
-            try {
-                const wallThickness = Math.max(12, canvas.width * 0.025);
-                const mazeType = (level - 1) % 5; // 5 different maze patterns
-                
-                switch(mazeType) {
-                    case 0: // Simple aisles (Level 1, 6, 11...)
-                        generateSimpleAisles(walls, wallThickness);
-                        break;
-                    case 1: // Cross pattern (Level 2, 7, 12...)
-                        generateCrossPattern(walls, wallThickness);
-                        break;
-                    case 2: // Spiral layout (Level 3, 8, 13...)
-                        generateSpiralLayout(walls, wallThickness);
-                        break;
-                    case 3: // Grid maze (Level 4, 9, 14...)
-                        generateGridMaze(walls, wallThickness);
-                        break;
-                    case 4: // Complex store (Level 5, 10, 15...)
-                        generateComplexStore(walls, wallThickness);
-                        break;
-                    default:
-                        generateSimpleAisles(walls, wallThickness);
-                        break;
-                }
-            } catch(e) {
-                // Fallback to simple layout if any maze generation fails
-                generateSimpleAisles(walls, 15);
-            }
-            
-            return walls;
-        }
-        
-        function generateSimpleAisles(walls, wallThickness) {
-            try {
-                // Simple store aisles - easy navigation
-                const aisleWidth = canvas.height * 0.15;
-                const aisleCount = Math.min(3, Math.floor(level / 2) + 1);
-                
-                for (let i = 1; i <= aisleCount; i++) {
-                    const y = (canvas.height / (aisleCount + 1)) * i;
+            static setupCanvas() {
+                const updateSize = () => {
+                    const container = document.querySelector('.game-container');
+                    const rect = container.getBoundingClientRect();
                     
-                    // Left aisle
-                    walls.push({
-                        x: canvas.width * 0.15,
-                        y: y - aisleWidth/2,
-                        width: canvas.width * 0.25,
-                        height: wallThickness
-                    });
+                    // Account for HUD (60px) and controls (160px) with safe margins
+                    const hudHeight = 60;
+                    const controlsHeight = 160;
+                    const safeMargin = 20;
                     
-                    // Right aisle
-                    walls.push({
-                        x: canvas.width * 0.6,
-                        y: y - aisleWidth/2,
-                        width: canvas.width * 0.25,
-                        height: wallThickness
-                    });
-                }
-            } catch(e) {
-                // Simple fallback aisle
-                walls.push({
-                    x: canvas.width * 0.2,
-                    y: canvas.height * 0.4,
-                    width: canvas.width * 0.6,
-                    height: wallThickness
+                    const availableHeight = rect.height - hudHeight - controlsHeight - safeMargin;
+                    const availableWidth = rect.width - (safeMargin * 2);
+                    
+                    // Maintain aspect ratio with minimum sizes
+                    const aspectRatio = 4/3;
+                    let canvasWidth = Math.min(Math.max(availableWidth, 320), 600);
+                    let canvasHeight = canvasWidth / aspectRatio;
+                    
+                    if (canvasHeight > availableHeight) {
+                        canvasHeight = Math.max(availableHeight, 240);
+                        canvasWidth = canvasHeight * aspectRatio;
+                    }
+                    
+                    // Ensure even dimensions for better rendering
+                    canvasWidth = Math.floor(canvasWidth / 2) * 2;
+                    canvasHeight = Math.floor(canvasHeight / 2) * 2;
+                    
+                    this.canvas.width = canvasWidth;
+                    this.canvas.height = canvasHeight;
+                    this.canvas.style.width = canvasWidth + 'px';
+                    this.canvas.style.height = canvasHeight + 'px';
+                };
+                
+                updateSize();
+                
+                // Debounced resize handler
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(updateSize, 100);
+                });
+                
+                // Prevent iOS scrolling and zoom
+                document.addEventListener('touchmove', (e) => {
+                    if (e.target.closest('canvas') || e.target.closest('.dpad-btn')) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                document.addEventListener('gesturestart', (e) => {
+                    e.preventDefault();
                 });
             }
-        }
-        
-        function generateCrossPattern(walls, wallThickness) {
-            try {
-                // Cross-shaped store layout
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                
-                // Horizontal corridor
-                walls.push({
-                    x: canvas.width * 0.2,
-                    y: centerY - canvas.height * 0.15,
-                    width: canvas.width * 0.6,
-                    height: wallThickness
-                });
-                walls.push({
-                    x: canvas.width * 0.2,
-                    y: centerY + canvas.height * 0.15,
-                    width: canvas.width * 0.6,
-                    height: wallThickness
+            
+            static setupInput() {
+                // Keyboard
+                document.addEventListener('keydown', (e) => {
+                    this.handleInput(e.code, true);
+                    e.preventDefault();
                 });
                 
-                // Vertical corridor
-                walls.push({
-                    x: centerX - canvas.width * 0.15,
-                    y: canvas.height * 0.2,
-                    width: wallThickness,
-                    height: canvas.height * 0.6
+                document.addEventListener('keyup', (e) => {
+                    this.handleInput(e.code, false);
+                    e.preventDefault();
                 });
-                walls.push({
-                    x: centerX + canvas.width * 0.15,
-                    y: canvas.height * 0.2,
-                    width: wallThickness,
-                    height: canvas.height * 0.6
-                });
-            } catch(e) {
-                generateSimpleAisles(walls, wallThickness);
-            }
-        }
-        
-        function generateSpiralLayout(walls, wallThickness) {
-            try {
-                // Spiral store layout
-                const layers = Math.min(3, Math.floor(level / 2) + 1);
                 
-                for (let layer = 0; layer < layers; layer++) {
-                    const margin = (layer + 1) * (canvas.width * 0.1);
-                    const width = canvas.width - margin * 2;
-                    const height = canvas.height - margin * 2;
+                // Touch controls - improved to prevent conflicts
+                let activeButton = null;
+                
+                document.querySelectorAll('.dpad-btn').forEach(btn => {
+                    btn.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!this.running) return;
+                        
+                        activeButton = btn;
+                        this.setDirection(btn.dataset.direction);
+                    }, { passive: false });
                     
-                    if (width > wallThickness * 2 && height > wallThickness * 2) {
-                        // Top wall
-                        walls.push({
-                            x: margin,
-                            y: margin,
-                            width: width - wallThickness,
-                            height: wallThickness
-                        });
-                        
-                        // Right wall
-                        walls.push({
-                            x: margin + width - wallThickness,
-                            y: margin,
-                            width: wallThickness,
-                            height: height - wallThickness
-                        });
-                        
-                        // Bottom wall
-                        walls.push({
-                            x: margin + wallThickness,
-                            y: margin + height - wallThickness,
-                            width: width - wallThickness,
-                            height: wallThickness
-                        });
-                        
-                        // Left wall (with gap for entrance)
-                        if (layer === 0) {
-                            walls.push({
-                                x: margin,
-                                y: margin,
-                                width: wallThickness,
-                                height: height * 0.4
-                            });
-                            walls.push({
-                                x: margin,
-                                y: margin + height * 0.6,
-                                width: wallThickness,
-                                height: height * 0.4
-                            });
+                    btn.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (activeButton === btn) {
+                            this.input.direction = { x: 0, y: 0 };
+                            activeButton = null;
+                        }
+                    }, { passive: false });
+                    
+                    btn.addEventListener('touchcancel', (e) => {
+                        e.preventDefault();
+                        if (activeButton === btn) {
+                            this.input.direction = { x: 0, y: 0 };
+                            activeButton = null;
+                        }
+                    }, { passive: false });
+                });
+                
+                // Canvas swipe - only activate if no button is pressed
+                let touchStart = null;
+                let touchMoved = false;
+                
+                this.canvas.addEventListener('touchstart', (e) => {
+                    if (activeButton) return; // Don't interfere with button controls
+                    touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    touchMoved = false;
+                }, { passive: true });
+                
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    if (!touchStart || !this.running || activeButton) return;
+                    
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - touchStart.x;
+                    const deltaY = touch.clientY - touchStart.y;
+                    const minSwipeDistance = 25;
+                    
+                    if (!touchMoved && (Math.abs(deltaX) > minSwipeDistance || Math.abs(deltaY) > minSwipeDistance)) {
+                        touchMoved = true;
+                        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                            this.input.direction = { x: deltaX > 0 ? 1 : -1, y: 0 };
                         } else {
-                            walls.push({
-                                x: margin,
-                                y: margin + wallThickness,
-                                width: wallThickness,
-                                height: height - wallThickness * 2
-                            });
+                            this.input.direction = { x: 0, y: deltaY > 0 ? 1 : -1 };
                         }
                     }
+                }, { passive: false });
+                
+                this.canvas.addEventListener('touchend', (e) => {
+                    if (touchMoved && !activeButton) {
+                        this.input.direction = { x: 0, y: 0 };
+                    }
+                    touchStart = null;
+                    touchMoved = false;
+                }, { passive: true });
+            }
+            
+            static handleInput(code, pressed) {
+                if (!this.running) return;
+                
+                const directions = {
+                    'ArrowUp': { x: 0, y: -1 },
+                    'ArrowDown': { x: 0, y: 1 },
+                    'ArrowLeft': { x: -1, y: 0 },
+                    'ArrowRight': { x: 1, y: 0 },
+                    'KeyW': { x: 0, y: -1 },
+                    'KeyS': { x: 0, y: 1 },
+                    'KeyA': { x: -1, y: 0 },
+                    'KeyD': { x: 1, y: 0 }
+                };
+                
+                if (pressed && directions[code]) {
+                    this.input.direction = directions[code];
+                } else if (!pressed) {
+                    this.input.direction = { x: 0, y: 0 };
                 }
-            } catch(e) {
-                generateSimpleAisles(walls, wallThickness);
+            }
+            
+            static setDirection(dir) {
+                const directions = {
+                    up: { x: 0, y: -1 },
+                    down: { x: 0, y: 1 },
+                    left: { x: -1, y: 0 },
+                    right: { x: 1, y: 0 }
+                };
+                this.input.direction = directions[dir];
+            }
+            
+            static showStartScreen() {
+                document.getElementById('startScreen').classList.add('show');
+            }
+            
+            static start() {
+                document.getElementById('startScreen').classList.remove('show');
+                this.started = true;
+                this.running = true;
+                this.initializeLevel();
+                this.gameLoop();
+            }
+            
+            static initializeLevel() {
+                // Initialize player
+                this.player = new Player(50, 50);
+                
+                // Generate maze with guaranteed accessibility
+                this.maze = new Maze(this.canvas.width, this.canvas.height, this.state.level);
+                
+                // Place entities in accessible areas
+                this.entities.items = ItemManager.generate(this.state.level, this.maze);
+                this.entities.customers = CustomerManager.generate(this.state.level, this.maze);
+                this.entities.powerUps = PowerUpManager.generate(this.state.level, this.maze);
+                this.entities.particles = [];
+                
+                // Find safe starting position
+                const safePos = this.maze.findSafePosition(this.player.size);
+                this.player.x = safePos.x;
+                this.player.y = safePos.y;
+                
+                this.updateHUD();
+            }
+            
+            static gameLoop() {
+                if (!this.started) return;
+                
+                if (this.running) {
+                    this.update();
+                }
+                
+                this.render();
+                requestAnimationFrame(() => this.gameLoop());
+            }
+            
+            static update() {
+                // Update player
+                this.player.update(this.input.direction, this.maze);
+                
+                // Update entities
+                this.entities.customers.forEach(customer => customer.update(this.maze, this.player));
+                this.entities.powerUps.forEach(powerUp => powerUp.update());
+                this.entities.particles = this.entities.particles.filter(particle => {
+                    particle.update();
+                    return particle.life > 0;
+                });
+                
+                // Update power-up timer
+                if (this.activePowerUp) {
+                    this.powerUpTimer--;
+                    if (this.powerUpTimer <= 0) {
+                        this.activePowerUp.deactivate(this.player);
+                        this.activePowerUp = null;
+                        document.getElementById('powerIndicator').style.display = 'none';
+                    }
+                }
+                
+                // Update combo timer
+                if (this.state.comboTimer > 0) {
+                    this.state.comboTimer--;
+                } else {
+                    this.state.combo = 0;
+                }
+                
+                // Update camera
+                if (this.camera.shake > 0) {
+                    this.camera.shake--;
+                }
+                
+                this.checkCollisions();
+                this.updateHUD();
+            }
+            
+            static checkCollisions() {
+                if (!this.running) return; // Prevent collision checks when game isn't running
+                
+                // Item collection
+                this.entities.items.forEach(item => {
+                    if (!item.collected && this.player && this.player.collidesWith(item)) {
+                        item.collected = true;
+                        this.state.score += 10 + this.state.combo;
+                        this.state.combo++;
+                        this.state.comboTimer = 120;
+                        this.createParticles(item.x, item.y, '#fbbf24', 6);
+                        this.playSound('collect');
+                    }
+                });
+                
+                // Power-up collection
+                this.entities.powerUps.forEach(powerUp => {
+                    if (!powerUp.collected && this.player && this.player.collidesWith(powerUp)) {
+                        powerUp.collected = true;
+                        
+                        // Only activate if no power-up is currently active (prevent conflicts)
+                        if (!this.activePowerUp) {
+                            this.activePowerUp = powerUp;
+                            this.powerUpTimer = powerUp.duration;
+                            powerUp.activate(this.player);
+                            this.createParticles(powerUp.x, powerUp.y, powerUp.color, 8);
+                            this.playSound('powerup');
+                            
+                            const indicator = document.getElementById('powerIndicator');
+                            indicator.style.display = 'block';
+                            indicator.innerHTML = `${powerUp.icon} ${powerUp.name.toUpperCase()}`;
+                        }
+                    }
+                });
+                
+                // Customer collisions
+                const currentTime = Date.now();
+                this.entities.customers.forEach(customer => {
+                    if (this.player && this.player.collidesWith(customer) && customer.harmful && 
+                        !this.player.invulnerable && currentTime - customer.lastHit > 1500) {
+                        customer.lastHit = currentTime;
+                        this.state.health = Math.max(0, this.state.health - 1);
+                        this.state.combo = 0;
+                        this.state.comboTimer = 0;
+                        this.camera.shake = 15;
+                        this.player.makeInvulnerable();
+                        this.createParticles(this.player.x, this.player.y, '#ef4444', 12);
+                        this.playSound('hit');
+                        
+                        if (this.state.health <= 0) {
+                            this.gameOver();
+                            return; // Exit early to prevent multiple game over calls
+                        }
+                    }
+                });
+                
+                // Level completion check (with safeguard)
+                const allItemsCollected = this.entities.items.length > 0 && 
+                    this.entities.items.every(item => item.collected);
+                
+                if (allItemsCollected && this.running) {
+                    this.levelComplete();
+                }
+            }
+            
+            static createParticles(x, y, color, count) {
+                // Limit total particle count for performance
+                const maxParticles = 150;
+                
+                // Remove oldest particles if we're at the limit
+                if (this.entities.particles.length > maxParticles - count) {
+                    this.entities.particles.splice(0, this.entities.particles.length - maxParticles + count);
+                }
+                
+                for (let i = 0; i < count; i++) {
+                    this.entities.particles.push(new Particle(x, y, color));
+                }
+            }
+            
+            static playSound(type) {
+                try {
+                    // Check if Web Audio API is supported
+                    if (typeof AudioContext === 'undefined' && typeof webkitAudioContext === 'undefined') {
+                        return;
+                    }
+                    
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    const audioCtx = new AudioContextClass();
+                    
+                    // Handle suspended audio context (required for iOS)
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume().catch(() => {
+                            audioCtx.close();
+                            return;
+                        });
+                    }
+                    
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    const sounds = {
+                        collect: { freq: 800, duration: 0.1 },
+                        powerup: { freq: 600, duration: 0.2 },
+                        hit: { freq: 200, duration: 0.3 },
+                        levelup: { freq: 1000, duration: 0.5 }
+                    };
+                    
+                    const sound = sounds[type] || sounds.collect;
+                    
+                    oscillator.frequency.setValueAtTime(sound.freq, audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + sound.duration);
+                    
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + sound.duration);
+                    
+                    // Clean up audio context
+                    setTimeout(() => {
+                        audioCtx.close().catch(() => {});
+                    }, (sound.duration * 1000) + 100);
+                    
+                } catch(error) {
+                    // Silent fail - don't break the game if audio fails
+                    console.debug('Audio playback failed:', error.message);
+                }
+            }
+            
+            static render() {
+                // Clear with camera shake
+                this.ctx.save();
+                if (this.camera.shake > 0) {
+                    this.ctx.translate(
+                        (Math.random() - 0.5) * this.camera.shake,
+                        (Math.random() - 0.5) * this.camera.shake
+                    );
+                }
+                
+                // Background
+                const gradient = this.ctx.createRadialGradient(
+                    this.canvas.width/2, this.canvas.height/2, 0,
+                    this.canvas.width/2, this.canvas.height/2, this.canvas.width/2
+                );
+                gradient.addColorStop(0, '#1a1a2e');
+                gradient.addColorStop(1, '#0a0a1a');
+                this.ctx.fillStyle = gradient;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Render entities
+                if (this.maze) this.maze.render(this.ctx);
+                if (this.player) this.player.render(this.ctx);
+                
+                this.entities.items.forEach(item => item.render(this.ctx));
+                this.entities.powerUps.forEach(powerUp => powerUp.render(this.ctx));
+                this.entities.customers.forEach(customer => customer.render(this.ctx));
+                this.entities.particles.forEach(particle => particle.render(this.ctx));
+                
+                this.ctx.restore();
+            }
+            
+            static updateHUD() {
+                document.getElementById('score').textContent = this.state.score;
+                document.getElementById('level').textContent = this.state.level;
+                document.getElementById('health').textContent = '❤️'.repeat(this.state.health);
+                document.getElementById('combo').textContent = this.state.combo;
+            }
+            
+            static levelComplete() {
+                if (!this.running) return; // Prevent multiple calls
+                
+                this.running = false;
+                const bonusPoints = this.state.health * 50 + this.state.combo * 10;
+                this.state.score += bonusPoints;
+                this.playSound('levelup');
+                
+                document.getElementById('bonusPoints').textContent = bonusPoints;
+                document.getElementById('levelComplete').classList.add('show');
+            }
+            
+            static nextLevel() {
+                // Clean up current level
+                document.getElementById('levelComplete').classList.remove('show');
+                
+                // Progress to next level
+                this.state.level++;
+                this.state.health = Math.min(this.state.health + 1, 5);
+                this.state.combo = 0;
+                this.state.comboTimer = 0;
+                
+                // Reset power-up system
+                if (this.activePowerUp) {
+                    this.activePowerUp.deactivate(this.player);
+                    this.activePowerUp = null;
+                    this.powerUpTimer = 0;
+                    document.getElementById('powerIndicator').style.display = 'none';
+                }
+                
+                // Reset camera
+                this.camera.shake = 0;
+                
+                // Initialize new level
+                this.running = true;
+                this.initializeLevel();
+            }
+            
+            static gameOver() {
+                if (!this.running) return; // Prevent multiple calls
+                
+                this.running = false;
+                
+                // Clean up power-ups
+                if (this.activePowerUp) {
+                    this.activePowerUp.deactivate(this.player);
+                    this.activePowerUp = null;
+                    this.powerUpTimer = 0;
+                    document.getElementById('powerIndicator').style.display = 'none';
+                }
+                
+                document.getElementById('finalScore').textContent = this.state.score;
+                document.getElementById('finalLevel').textContent = this.state.level;
+                document.getElementById('gameOver').classList.add('show');
+            }
+            
+            static restart() {
+                // Complete state reset
+                this.running = false;
+                this.started = false;
+                
+                // Reset all game state
+                this.state = { 
+                    score: 0, 
+                    level: 1, 
+                    health: 3, 
+                    combo: 0, 
+                    comboTimer: 0 
+                };
+                
+                // Reset systems
+                this.activePowerUp = null;
+                this.powerUpTimer = 0;
+                this.camera = { shake: 0 };
+                this.input = { direction: { x: 0, y: 0 } };
+                
+                // Clear all entities
+                this.entities = {
+                    items: [],
+                    customers: [],
+                    powerUps: [],
+                    particles: []
+                };
+                
+                // Reset player
+                this.player = null;
+                this.maze = null;
+                
+                // Hide UI elements
+                document.getElementById('gameOver').classList.remove('show');
+                document.getElementById('powerIndicator').style.display = 'none';
+                
+                // Wait a frame then restart
+                setTimeout(() => {
+                    this.started = true;
+                    this.running = true;
+                    this.initializeLevel();
+                }, 100);
             }
         }
         
-        function generateGridMaze(walls, wallThickness) {
-            try {
-                // Grid-based store sections
-                const cols = Math.min(4, 2 + Math.floor(level / 3));
-                const rows = Math.min(3, 2 + Math.floor(level / 4));
-                const cellWidth = (canvas.width - wallThickness * 2) / cols;
-                const cellHeight = (canvas.height - wallThickness * 2) / rows;
+        // Revolutionary Maze System with Guaranteed Accessibility
+        class Maze {
+            constructor(width, height, level) {
+                this.width = width;
+                this.height = height;
+                this.level = level;
+                this.cellSize = Math.max(20, Math.min(width, height) / 25);
+                this.cols = Math.floor(width / this.cellSize);
+                this.rows = Math.floor(height / this.cellSize);
+                this.walls = [];
+                this.accessibleAreas = [];
                 
-                for (let row = 0; row < rows; row++) {
-                    for (let col = 0; col < cols; col++) {
-                        const x = wallThickness + col * cellWidth;
-                        const y = wallThickness + row * cellHeight;
-                        
-                        // Randomly place walls to create store sections
-                        if (Math.random() < 0.6 && (row > 0 || col > 0)) {
-                            if (Math.random() < 0.5) {
-                                // Vertical wall
-                                walls.push({
-                                    x: x + cellWidth * 0.3,
-                                    y: y,
-                                    width: wallThickness,
-                                    height: cellHeight * 0.7
-                                });
-                            } else {
-                                // Horizontal wall
-                                walls.push({
-                                    x: x,
-                                    y: y + cellHeight * 0.3,
-                                    width: cellWidth * 0.7,
-                                    height: wallThickness
-                                });
+                this.generate();
+                this.ensureAccessibility();
+            }
+            
+            generate() {
+                const patterns = [
+                    () => this.generateSimpleStore(),
+                    () => this.generateCrossStore(),
+                    () => this.generateMallStore(),
+                    () => this.generateComplexStore(),
+                    () => this.generateMegaStore()
+                ];
+                
+                const patternIndex = (this.level - 1) % patterns.length;
+                patterns[patternIndex]();
+            }
+            
+            generateSimpleStore() {
+                // Outer walls
+                this.addWalls([
+                    { x: 0, y: 0, width: this.width, height: 15 },
+                    { x: 0, y: this.height - 15, width: this.width, height: 15 },
+                    { x: 0, y: 0, width: 15, height: this.height },
+                    { x: this.width - 15, y: 0, width: 15, height: this.height }
+                ]);
+                
+                // Simple aisles
+                const aisleCount = Math.min(3, Math.floor(this.level / 2) + 1);
+                for (let i = 1; i <= aisleCount; i++) {
+                    const y = (this.height / (aisleCount + 1)) * i;
+                    this.addWalls([
+                        { x: this.width * 0.15, y: y - 10, width: this.width * 0.25, height: 20 },
+                        { x: this.width * 0.6, y: y - 10, width: this.width * 0.25, height: 20 }
+                    ]);
+                }
+            }
+            
+            generateCrossStore() {
+                this.addWalls([
+                    { x: 0, y: 0, width: this.width, height: 15 },
+                    { x: 0, y: this.height - 15, width: this.width, height: 15 },
+                    { x: 0, y: 0, width: 15, height: this.height },
+                    { x: this.width - 15, y: 0, width: 15, height: this.height }
+                ]);
+                
+                // Cross pattern
+                const centerX = this.width / 2;
+                const centerY = this.height / 2;
+                const thickness = 15;
+                
+                this.addWalls([
+                    { x: this.width * 0.2, y: centerY - this.height * 0.15, width: this.width * 0.6, height: thickness },
+                    { x: this.width * 0.2, y: centerY + this.height * 0.15, width: this.width * 0.6, height: thickness },
+                    { x: centerX - this.width * 0.15, y: this.height * 0.2, width: thickness, height: this.height * 0.6 },
+                    { x: centerX + this.width * 0.15, y: this.height * 0.2, width: thickness, height: this.height * 0.6 }
+                ]);
+            }
+            
+            generateMallStore() {
+                this.addWalls([
+                    { x: 0, y: 0, width: this.width, height: 15 },
+                    { x: 0, y: this.height - 15, width: this.width, height: 15 },
+                    { x: 0, y: 0, width: 15, height: this.height },
+                    { x: this.width - 15, y: 0, width: 15, height: this.height }
+                ]);
+                
+                // Multiple store sections
+                const sections = 2 + Math.floor(this.level / 3);
+                for (let i = 0; i < sections; i++) {
+                    const x = (this.width / (sections + 1)) * (i + 1);
+                    const y = this.height * 0.3 + Math.random() * this.height * 0.4;
+                    
+                    this.addWalls([
+                        { x: x - this.width * 0.1, y: y - 30, width: this.width * 0.2, height: 15 },
+                        { x: x - this.width * 0.1, y: y + 15, width: this.width * 0.2, height: 15 }
+                    ]);
+                }
+            }
+            
+            generateComplexStore() {
+                this.addWalls([
+                    { x: 0, y: 0, width: this.width, height: 15 },
+                    { x: 0, y: this.height - 15, width: this.width, height: 15 },
+                    { x: 0, y: 0, width: 15, height: this.height },
+                    { x: this.width - 15, y: 0, width: 15, height: this.height }
+                ]);
+                
+                // Department store layout
+                const departments = [
+                    { x: this.width * 0.1, y: this.height * 0.1, width: this.width * 0.25, height: this.height * 0.3 },
+                    { x: this.width * 0.65, y: this.height * 0.1, width: this.width * 0.25, height: this.height * 0.3 },
+                    { x: this.width * 0.1, y: this.height * 0.6, width: this.width * 0.25, height: this.height * 0.3 },
+                    { x: this.width * 0.65, y: this.height * 0.6, width: this.width * 0.25, height: this.height * 0.3 }
+                ];
+                
+                departments.forEach(dept => {
+                    this.addWalls([
+                        { x: dept.x, y: dept.y, width: dept.width, height: 15 },
+                        { x: dept.x, y: dept.y + dept.height, width: dept.width, height: 15 },
+                        { x: dept.x, y: dept.y, width: 15, height: dept.height },
+                        { x: dept.x + dept.width, y: dept.y, width: 15, height: dept.height }
+                    ]);
+                });
+            }
+            
+            generateMegaStore() {
+                this.generateComplexStore();
+                
+                // Add central hub
+                const centerX = this.width / 2;
+                const centerY = this.height / 2;
+                const hubSize = Math.min(this.width, this.height) * 0.15;
+                
+                this.addWalls([
+                    { x: centerX - hubSize, y: centerY - hubSize, width: hubSize * 2, height: 15 },
+                    { x: centerX - hubSize, y: centerY + hubSize, width: hubSize * 2, height: 15 },
+                    { x: centerX - hubSize, y: centerY - hubSize, width: 15, height: hubSize * 2 },
+                    { x: centerX + hubSize, y: centerY - hubSize, width: 15, height: hubSize * 2 }
+                ]);
+            }
+            
+            addWalls(wallList) {
+                this.walls.push(...wallList);
+            }
+            
+            ensureAccessibility() {
+                // Use flood fill to identify accessible areas
+                const grid = Array(this.rows).fill().map(() => Array(this.cols).fill(false));
+                
+                // Mark wall cells
+                this.walls.forEach(wall => {
+                    const startCol = Math.floor(wall.x / this.cellSize);
+                    const endCol = Math.floor((wall.x + wall.width) / this.cellSize);
+                    const startRow = Math.floor(wall.y / this.cellSize);
+                    const endRow = Math.floor((wall.y + wall.height) / this.cellSize);
+                    
+                    for (let row = startRow; row <= endRow && row < this.rows; row++) {
+                        for (let col = startCol; col <= endCol && col < this.cols; col++) {
+                            if (row >= 0 && col >= 0) {
+                                grid[row][col] = true;
+                            }
+                        }
+                    }
+                });
+                
+                // Find all accessible areas using flood fill
+                const visited = Array(this.rows).fill().map(() => Array(this.cols).fill(false));
+                this.accessibleAreas = [];
+                
+                for (let row = 0; row < this.rows; row++) {
+                    for (let col = 0; col < this.cols; col++) {
+                        if (!grid[row][col] && !visited[row][col]) {
+                            const area = this.floodFill(grid, visited, row, col);
+                            if (area.length > 0) {
+                                this.accessibleAreas.push(area);
                             }
                         }
                     }
                 }
-            } catch(e) {
-                generateSimpleAisles(walls, wallThickness);
-            }
-        }
-        
-        function generateComplexStore(walls, wallThickness) {
-            try {
-                // Complex store with multiple departments
-                const sections = [
-                    // Central checkout area
-                    {x: canvas.width * 0.4, y: canvas.height * 0.4, 
-                     width: canvas.width * 0.2, height: canvas.height * 0.2},
-                    
-                    // Corner departments
-                    {x: canvas.width * 0.1, y: canvas.height * 0.1, 
-                     width: canvas.width * 0.25, height: canvas.height * 0.25},
-                    {x: canvas.width * 0.65, y: canvas.height * 0.1, 
-                     width: canvas.width * 0.25, height: canvas.height * 0.25},
-                    {x: canvas.width * 0.1, y: canvas.height * 0.65, 
-                     width: canvas.width * 0.25, height: canvas.height * 0.25}
-                ];
                 
-                sections.forEach(section => {
-                    if (section.width > wallThickness * 2 && section.height > wallThickness * 2) {
-                        // Create department boundaries
-                        walls.push({x: section.x, y: section.y, width: section.width, height: wallThickness});
-                        walls.push({x: section.x, y: section.y + section.height, width: section.width, height: wallThickness});
-                        walls.push({x: section.x, y: section.y, width: wallThickness, height: section.height});
-                        walls.push({x: section.x + section.width, y: section.y, width: wallThickness, height: section.height});
-                        
-                        // Add internal shelving
-                        if (section.width > canvas.width * 0.15) {
-                            walls.push({
-                                x: section.x + section.width * 0.3,
-                                y: section.y + wallThickness,
-                                width: wallThickness,
-                                height: section.height * 0.6
-                            });
-                        }
+                // If we have multiple disconnected areas, connect them
+                this.connectAreas();
+            }
+            
+            floodFill(grid, visited, startRow, startCol) {
+                const area = [];
+                const stack = [{row: startRow, col: startCol}];
+                
+                while (stack.length > 0) {
+                    const {row, col} = stack.pop();
+                    
+                    if (row < 0 || row >= this.rows || col < 0 || col >= this.cols ||
+                        visited[row][col] || grid[row][col]) {
+                        continue;
+                    }
+                    
+                    visited[row][col] = true;
+                    area.push({
+                        x: col * this.cellSize + this.cellSize / 2,
+                        y: row * this.cellSize + this.cellSize / 2
+                    });
+                    
+                    // Add neighbors
+                    stack.push({row: row - 1, col: col});
+                    stack.push({row: row + 1, col: col});
+                    stack.push({row: row, col: col - 1});
+                    stack.push({row: row, col: col + 1});
+                }
+                
+                return area;
+            }
+            
+            connectAreas() {
+                if (this.accessibleAreas.length <= 1) return;
+                
+                // Connect all areas to the largest one
+                const largestArea = this.accessibleAreas.reduce((a, b) => a.length > b.length ? a : b);
+                
+                this.accessibleAreas.forEach(area => {
+                    if (area !== largestArea) {
+                        this.createConnection(largestArea, area);
                     }
                 });
-            } catch(e) {
-                generateSimpleAisles(walls, wallThickness);
+            }
+            
+            createConnection(area1, area2) {
+                // Find closest points between areas
+                let minDist = Infinity;
+                let point1, point2;
+                
+                for (const p1 of area1) {
+                    for (const p2 of area2) {
+                        const dist = Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            point1 = p1;
+                            point2 = p2;
+                        }
+                    }
+                }
+                
+                // Remove walls between these points
+                this.clearPath(point1, point2);
+            }
+            
+            clearPath(from, to) {
+                const dx = to.x - from.x;
+                const dy = to.y - from.y;
+                const distance = Math.sqrt(dx ** 2 + dy ** 2);
+                const steps = Math.ceil(distance / 5);
+                
+                for (let i = 0; i <= steps; i++) {
+                    const t = i / steps;
+                    const x = from.x + dx * t;
+                    const y = from.y + dy * t;
+                    
+                    // Remove walls in a small radius around this point
+                    this.walls = this.walls.filter(wall => {
+                        return !(x >= wall.x - 10 && x <= wall.x + wall.width + 10 &&
+                                y >= wall.y - 10 && y <= wall.y + wall.height + 10);
+                    });
+                }
+            }
+            
+            findSafePosition(entitySize) {
+                if (this.accessibleAreas.length === 0) {
+                    return { x: this.width / 2, y: this.height / 2 };
+                }
+                
+                // Use the largest accessible area
+                const largestArea = this.accessibleAreas.reduce((a, b) => a.length > b.length ? a : b);
+                
+                // Find a position with enough clearance
+                for (const pos of largestArea) {
+                    if (!this.checkCollision({ x: pos.x, y: pos.y, size: entitySize })) {
+                        return pos;
+                    }
+                }
+                
+                // Fallback
+                return largestArea[0] || { x: this.width / 2, y: this.height / 2 };
+            }
+            
+            getRandomAccessiblePosition(entitySize, attempts = 50) {
+                const safePositions = [];
+                const margin = entitySize + 5; // Extra margin for safety
+                
+                // Collect all safe positions from accessible areas
+                this.accessibleAreas.forEach(area => {
+                    area.forEach(pos => {
+                        // Check if position has enough clearance from walls and boundaries
+                        const testEntity = { x: pos.x, y: pos.y, size: entitySize };
+                        if (!this.checkCollision(testEntity) && 
+                            pos.x > margin && pos.x < this.width - margin &&
+                            pos.y > margin && pos.y < this.height - margin) {
+                            safePositions.push(pos);
+                        }
+                    });
+                });
+                
+                // If we have safe positions, use one randomly
+                if (safePositions.length > 0) {
+                    return safePositions[Math.floor(Math.random() * safePositions.length)];
+                }
+                
+                // Fallback: try to find ANY safe position with brute force
+                for (let attempt = 0; attempt < attempts; attempt++) {
+                    const x = margin + Math.random() * (this.width - 2 * margin);
+                    const y = margin + Math.random() * (this.height - 2 * margin);
+                    
+                    if (!this.checkCollision({ x, y, size: entitySize })) {
+                        return { x, y };
+                    }
+                }
+                
+                // Final fallback - center of screen
+                return { 
+                    x: this.width / 2, 
+                    y: this.height / 2 
+                };
+            }
+            
+            checkCollision(entity) {
+                return this.walls.some(wall => 
+                    entity.x - entity.size/2 < wall.x + wall.width &&
+                    entity.x + entity.size/2 > wall.x &&
+                    entity.y - entity.size/2 < wall.y + wall.height &&
+                    entity.y + entity.size/2 > wall.y
+                );
+            }
+            
+            render(ctx) {
+                // Render walls with depth effect
+                ctx.save();
+                
+                this.walls.forEach(wall => {
+                    // Shadow
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(wall.x + 2, wall.y + 2, wall.width, wall.height);
+                    
+                    // Main wall
+                    const gradient = ctx.createLinearGradient(wall.x, wall.y, wall.x + wall.width, wall.y + wall.height);
+                    gradient.addColorStop(0, '#4a5568');
+                    gradient.addColorStop(1, '#2d3748');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+                    
+                    // Highlight
+                    ctx.fillStyle = '#718096';
+                    ctx.fillRect(wall.x, wall.y, wall.width, 2);
+                    ctx.fillRect(wall.x, wall.y, 2, wall.height);
+                });
+                
+                ctx.restore();
             }
         }
         
-        let walls = [];
+        // Enhanced Player Class
+        class Player {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = 20;
+                this.speed = 5;
+                this.trail = [];
+                this.invulnerable = false;
+                this.invulnerableTimer = 0;
+                this.rotation = 0;
+            }
+            
+            update(direction, maze) {
+                // Update trail
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > 8) this.trail.shift();
+                
+                // Update invulnerability
+                if (this.invulnerable) {
+                    this.invulnerableTimer--;
+                    if (this.invulnerableTimer <= 0) {
+                        this.invulnerable = false;
+                    }
+                }
+                
+                // Movement with smooth acceleration
+                const targetX = this.x + direction.x * this.speed;
+                const targetY = this.y + direction.y * this.speed;
+                
+                if (!maze.checkCollision({ x: targetX, y: this.y, size: this.size })) {
+                    this.x = targetX;
+                }
+                if (!maze.checkCollision({ x: this.x, y: targetY, size: this.size })) {
+                    this.y = targetY;
+                }
+                
+                // Keep in bounds
+                this.x = Math.max(this.size/2, Math.min(Game.canvas.width - this.size/2, this.x));
+                this.y = Math.max(this.size/2, Math.min(Game.canvas.height - this.size/2, this.y));
+                
+                // Update rotation for visual effect
+                if (direction.x !== 0 || direction.y !== 0) {
+                    this.rotation += 0.1;
+                }
+            }
+            
+            makeInvulnerable() {
+                this.invulnerable = true;
+                this.invulnerableTimer = 120;
+            }
+            
+            collidesWith(other) {
+                return Math.abs(this.x - other.x) < (this.size + other.size) / 2 &&
+                       Math.abs(this.y - other.y) < (this.size + other.size) / 2;
+            }
+            
+            render(ctx) {
+                ctx.save();
+                
+                // Render trail
+                this.trail.forEach((point, index) => {
+                    ctx.globalAlpha = (index / this.trail.length) * 0.5;
+                    const gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, this.size * 0.3);
+                    gradient.addColorStop(0, '#60a5fa');
+                    gradient.addColorStop(1, 'transparent');
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, this.size * 0.3, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                ctx.globalAlpha = 1;
+                
+                // Invulnerability effect
+                if (this.invulnerable) {
+                    ctx.globalAlpha = 0.5 + Math.sin(Date.now() * 0.02) * 0.3;
+                }
+                
+                // Main diamond
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                
+                // Glow effect
+                const glowGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size);
+                glowGradient.addColorStop(0, 'rgba(96, 165, 250, 0.8)');
+                glowGradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = glowGradient;
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Diamond shape
+                const gradient = ctx.createLinearGradient(-this.size/2, -this.size/2, this.size/2, this.size/2);
+                gradient.addColorStop(0, '#93c5fd');
+                gradient.addColorStop(0.5, '#60a5fa');
+                gradient.addColorStop(1, '#1d4ed8');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+                
+                // Shine effects
+                ctx.fillStyle = 'rgba(224, 242, 254, 0.8)';
+                ctx.fillRect(-this.size/4, -this.size/2, this.size/8, this.size/3);
+                ctx.fillRect(-this.size/2, -this.size/4, this.size/3, this.size/8);
+                
+                ctx.restore();
+            }
+        }
         
-        // Particle system
+        // Entity Classes
+        class Item {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = 8;
+                this.collected = false;
+                this.glow = Math.random() * Math.PI * 2;
+                this.baseSize = this.size;
+            }
+            
+            render(ctx) {
+                if (this.collected) return;
+                
+                this.glow += 0.1;
+                const glowSize = Math.sin(this.glow) * 2;
+                
+                // Outer glow
+                const glowGradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size + glowSize + 5);
+                glowGradient.addColorStop(0, 'rgba(251, 191, 36, 0.8)');
+                glowGradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = glowGradient;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size + glowSize + 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Main item
+                ctx.fillStyle = '#fbbf24';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size + glowSize, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Sparkle
+                ctx.fillStyle = '#fef3c7';
+                ctx.beginPath();
+                ctx.arc(this.x - 2, this.y - 2, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        class Customer {
+            constructor(x, y, type) {
+                this.x = x;
+                this.y = y;
+                this.size = 16;
+                this.type = type;
+                this.harmful = type.harmful;
+                this.speed = type.speed;
+                this.color = type.color;
+                this.lastHit = 0;
+                this.direction = { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 };
+                this.pathTimer = 0;
+                this.targetPlayer = this.harmful && Math.random() < 0.4;
+            }
+            
+            update(maze, player) {
+                if (this.targetPlayer && this.harmful) {
+                    // Smart pursuit with collision avoidance
+                    const dx = player.x - this.x;
+                    const dy = player.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 0 && distance < 200) { // Only pursue when close
+                        this.direction.x = (dx / distance) * 0.7;
+                        this.direction.y = (dy / distance) * 0.7;
+                    }
+                } else {
+                    // Random movement with wall avoidance
+                    this.pathTimer++;
+                    if (this.pathTimer > 45 + Math.random() * 30) {
+                        this.direction.x = (Math.random() - 0.5) * 2;
+                        this.direction.y = (Math.random() - 0.5) * 2;
+                        this.pathTimer = 0;
+                    }
+                }
+                
+                // Improved movement with precise collision detection
+                const moveStep = this.speed * 0.5; // Smaller steps for better collision
+                const steps = Math.ceil(this.speed / moveStep);
+                
+                for (let step = 0; step < steps; step++) {
+                    const newX = this.x + (this.direction.x * moveStep);
+                    const newY = this.y + (this.direction.y * moveStep);
+                    
+                    // Check X movement
+                    if (!maze.checkCollision({ x: newX, y: this.y, size: this.size })) {
+                        this.x = newX;
+                    } else {
+                        this.direction.x *= -0.8; // Slight dampening to prevent oscillation
+                        break;
+                    }
+                    
+                    // Check Y movement
+                    if (!maze.checkCollision({ x: this.x, y: newY, size: this.size })) {
+                        this.y = newY;
+                    } else {
+                        this.direction.y *= -0.8;
+                        break;
+                    }
+                }
+                
+                // Boundary collision with proper bounce
+                const margin = this.size + 5;
+                if (this.x <= margin) {
+                    this.x = margin;
+                    this.direction.x = Math.abs(this.direction.x);
+                }
+                if (this.x >= Game.canvas.width - margin) {
+                    this.x = Game.canvas.width - margin;
+                    this.direction.x = -Math.abs(this.direction.x);
+                }
+                if (this.y <= margin) {
+                    this.y = margin;
+                    this.direction.y = Math.abs(this.direction.y);
+                }
+                if (this.y >= Game.canvas.height - margin) {
+                    this.y = Game.canvas.height - margin;
+                    this.direction.y = -Math.abs(this.direction.y);
+                }
+            }
+            
+            render(ctx) {
+                ctx.save();
+                
+                // Shadow
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.beginPath();
+                ctx.arc(this.x + 2, this.y + 2, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Body glow for harmful customers
+                if (this.harmful) {
+                    const glowGradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size + 5);
+                    glowGradient.addColorStop(0, this.color + '80');
+                    glowGradient.addColorStop(1, 'transparent');
+                    ctx.fillStyle = glowGradient;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size + 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Body
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Eyes
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(this.x - this.size * 0.3, this.y - this.size * 0.2, this.size * 0.15, 0, Math.PI * 2);
+                ctx.arc(this.x + this.size * 0.3, this.y - this.size * 0.2, this.size * 0.15, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Pupils
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(this.x - this.size * 0.3, this.y - this.size * 0.2, this.size * 0.08, 0, Math.PI * 2);
+                ctx.arc(this.x + this.size * 0.3, this.y - this.size * 0.2, this.size * 0.08, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Mouth and expression
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                if (this.harmful) {
+                    // Frown
+                    ctx.arc(this.x, this.y + this.size * 0.4, this.size * 0.25, 0.2 * Math.PI, 0.8 * Math.PI);
+                    ctx.stroke();
+                    
+                    // Angry eyebrows
+                    ctx.beginPath();
+                    ctx.moveTo(this.x - this.size * 0.4, this.y - this.size * 0.4);
+                    ctx.lineTo(this.x - this.size * 0.1, this.y - this.size * 0.3);
+                    ctx.moveTo(this.x + this.size * 0.4, this.y - this.size * 0.4);
+                    ctx.lineTo(this.x + this.size * 0.1, this.y - this.size * 0.3);
+                    ctx.stroke();
+                } else {
+                    // Smile
+                    ctx.arc(this.x, this.y + this.size * 0.1, this.size * 0.25, 0.2 * Math.PI, 0.8 * Math.PI, true);
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            }
+        }
+        
+        class PowerUp {
+            constructor(x, y, type) {
+                this.x = x;
+                this.y = y;
+                this.size = 12;
+                this.collected = false;
+                this.type = type;
+                this.name = type.name;
+                this.color = type.color;
+                this.icon = type.icon;
+                this.duration = type.duration;
+                this.pulseTimer = Math.random() * Math.PI * 2;
+            }
+            
+            update() {
+                this.pulseTimer += 0.1;
+            }
+            
+            activate(player) {
+                this.type.activate(player);
+            }
+            
+            deactivate(player) {
+                this.type.deactivate(player);
+            }
+            
+            render(ctx) {
+                if (this.collected) return;
+                
+                const pulseSize = 2 + Math.sin(this.pulseTimer) * 3;
+                
+                // Outer glow
+                const glowGradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size + pulseSize + 8);
+                glowGradient.addColorStop(0, this.color + '80');
+                glowGradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = glowGradient;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size + pulseSize + 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Main power-up
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size + pulseSize, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Icon
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'white';
+                ctx.fillText(this.icon, this.x, this.y + 5);
+            }
+        }
+        
         class Particle {
-            constructor(x, y, color, velocity, life) {
+            constructor(x, y, color) {
                 this.x = x;
                 this.y = y;
                 this.color = color;
-                this.velocity = velocity;
-                this.life = life;
-                this.maxLife = life;
-                this.size = Math.random() * 3 + 1;
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 8,
+                    y: (Math.random() - 0.5) * 8
+                };
+                this.life = 30;
+                this.maxLife = 30;
+                this.size = Math.random() * 4 + 2;
             }
             
             update() {
                 this.x += this.velocity.x;
                 this.y += this.velocity.y;
-                this.life--;
                 this.velocity.x *= 0.98;
                 this.velocity.y *= 0.98;
+                this.life--;
                 this.size *= 0.98;
             }
             
-            draw() {
+            render(ctx) {
                 const alpha = this.life / this.maxLife;
                 ctx.globalAlpha = alpha;
-                ctx.fillStyle = this.color;
+                
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+                gradient.addColorStop(0, this.color);
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
+                
                 ctx.globalAlpha = 1;
             }
         }
         
-        function createParticles(x, y, color, count = 6) {
-            for (let i = 0; i < count; i++) {
-                const velocity = {
-                    x: (Math.random() - 0.5) * 8,
-                    y: (Math.random() - 0.5) * 8
-                };
-                particles.push(new Particle(x, y, color, velocity, 20));
+        // Entity Managers
+        class ItemManager {
+            static generate(level, maze) {
+                const items = [];
+                const itemCount = Math.min(15 + level * 2, 30);
+                
+                for (let i = 0; i < itemCount; i++) {
+                    const pos = maze.getRandomAccessiblePosition(8);
+                    items.push(new Item(pos.x, pos.y));
+                }
+                
+                return items;
             }
         }
         
-        // Customer class
-        class Customer {
-            constructor(x, y, type) {
-                this.x = x;
-                this.y = y;
-                this.size = Math.max(12, canvas.width * 0.025);
-                this.type = type;
-                this.lastHit = 0;
-                this.targetPlayer = type.harmful && Math.random() < 0.3;
-                this.pathfindingTimer = 0;
-                
-                if (this.targetPlayer) {
-                    this.speed = type.speed * 0.8;
-                } else {
-                    this.speed = type.speed;
-                    this.direction = { 
-                        x: (Math.random() - 0.5) * 2, 
-                        y: (Math.random() - 0.5) * 2 
-                    };
-                }
-            }
-            
-            update() {
-                if (this.targetPlayer) {
-                    const dx = player.x - this.x;
-                    const dy = player.y - this.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance > 0) {
-                        this.direction = {
-                            x: dx / distance,
-                            y: dy / distance
-                        };
-                    }
-                } else {
-                    this.pathfindingTimer++;
-                    if (this.pathfindingTimer > 40) {
-                        this.direction.x = (Math.random() - 0.5) * 2;
-                        this.direction.y = (Math.random() - 0.5) * 2;
-                        this.pathfindingTimer = 0;
-                    }
-                }
-                
-                const newX = this.x + this.direction.x * this.speed;
-                const newY = this.y + this.direction.y * this.speed;
-                
-                if (!checkWallCollision({x: newX, y: this.y, size: this.size})) {
-                    this.x = newX;
-                } else {
-                    this.direction.x *= -1;
-                }
-                
-                if (!checkWallCollision({x: this.x, y: newY, size: this.size})) {
-                    this.y = newY;
-                } else {
-                    this.direction.y *= -1;
-                }
-                
-                // Boundary collision
-                if (this.x <= this.size || this.x >= canvas.width - this.size) {
-                    this.direction.x *= -1;
-                }
-                if (this.y <= this.size || this.y >= canvas.height - this.size) {
-                    this.direction.y *= -1;
-                }
-            }
-            
-            draw() {
-                try {
-                    // Body
-                    ctx.fillStyle = this.type.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Eyes
-                    ctx.fillStyle = 'white';
-                    ctx.beginPath();
-                    ctx.arc(this.x - this.size * 0.3, this.y - this.size * 0.2, this.size * 0.15, 0, Math.PI * 2);
-                    ctx.arc(this.x + this.size * 0.3, this.y - this.size * 0.2, this.size * 0.15, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Pupils
-                    ctx.fillStyle = 'black';
-                    ctx.beginPath();
-                    ctx.arc(this.x - this.size * 0.3, this.y - this.size * 0.2, this.size * 0.08, 0, Math.PI * 2);
-                    ctx.arc(this.x + this.size * 0.3, this.y - this.size * 0.2, this.size * 0.08, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Mouth
-                    ctx.strokeStyle = 'white';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    if (this.type.harmful) {
-                        // Frown for bad customers
-                        ctx.arc(this.x, this.y + this.size * 0.4, this.size * 0.25, 0.2 * Math.PI, 0.8 * Math.PI);
-                        
-                        // Angry eyebrows
-                        ctx.moveTo(this.x - this.size * 0.4, this.y - this.size * 0.4);
-                        ctx.lineTo(this.x - this.size * 0.1, this.y - this.size * 0.3);
-                        ctx.moveTo(this.x + this.size * 0.4, this.y - this.size * 0.4);
-                        ctx.lineTo(this.x + this.size * 0.1, this.y - this.size * 0.3);
-                    } else {
-                        // Smile for good customers
-                        ctx.arc(this.x, this.y + this.size * 0.1, this.size * 0.25, 0.2 * Math.PI, 0.8 * Math.PI, true);
-                    }
-                    ctx.stroke();
-                } catch(e) {
-                    // Fallback simple drawing
-                    ctx.fillStyle = this.type.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-        }
-        
-        // Power-up types
-        const powerUpTypes = [
-            {
-                type: 'speed',
-                color: '#00ff88',
-                icon: '💨',
-                duration: 180,
-                effect: () => { player.speed = 6; }
-            },
-            {
-                type: 'shield',
-                color: '#4fc3f7',
-                icon: '🛡️',
-                duration: 300,
-                effect: () => { player.invulnerable = true; }
-            },
-            {
-                type: 'lightning',
-                color: '#ffeb3b',
-                icon: '⚡',
-                duration: 120,
-                effect: () => { 
-                    customers = customers.filter(c => {
-                        if (c.type.harmful) {
-                            createParticles(c.x, c.y, '#ffeb3b', 8);
-                            score += 30;
-                            return false;
-                        }
-                        return true;
-                    });
-                }
-            },
-            {
-                type: 'star',
-                color: '#ff9800',
-                icon: '🌟',
-                duration: 240,
-                effect: () => { 
-                    combo += 3;
-                    score += 50;
-                }
-            }
-        ];
-        
-        function findSafeStartPosition() {
-            try {
-                // Try to find a safe starting position that's not blocked by walls
-                const positions = [
-                    {x: canvas.width * 0.1, y: canvas.height * 0.1},
-                    {x: canvas.width * 0.1, y: canvas.height * 0.9},
-                    {x: canvas.width * 0.9, y: canvas.height * 0.1},
-                    {x: canvas.width * 0.5, y: canvas.height * 0.1},
-                    {x: canvas.width * 0.05, y: canvas.height * 0.5}
+        class CustomerManager {
+            static generate(level, maze) {
+                const customers = [];
+                const types = [
+                    { name: 'good', color: '#4ade80', harmful: false, speed: 1 },
+                    { name: 'karen', color: '#ef4444', harmful: true, speed: 1.5 },
+                    { name: 'darren', color: '#f97316', harmful: true, speed: 1.2 },
+                    { name: 'thief', color: '#a855f7', harmful: true, speed: 2 }
                 ];
                 
-                for (let pos of positions) {
-                    if (!checkWallCollision({x: pos.x, y: pos.y, size: player.size})) {
-                        return pos;
-                    }
-                }
+                // Level-based customer count: Level 1 = 1-2, Level 2 = 2-3, etc.
+                const minCustomers = level;
+                const maxCustomers = level + 1;
+                const customerCount = Math.floor(Math.random() * (maxCustomers - minCustomers + 1)) + minCustomers;
                 
-                // Fallback to a basic position
-                return {x: 50, y: 50};
-            } catch(e) {
-                return {x: 50, y: 50};
-            }
-        }
-        
-        function init() {
-            try {
-                resizeCanvas();
-                walls = generateMaze();
-                const startPos = findSafeStartPosition();
-                player.x = startPos.x;
-                player.y = startPos.y;
-                generateItems();
-                generateCustomers();
-                generatePowerUps();
-                updateDisplay();
-            } catch(e) {
-                console.log("Error in init:", e);
-                // Fallback initialization
-                walls = [
-                    {x: 0, y: 0, width: canvas.width, height: 15},
-                    {x: 0, y: canvas.height - 15, width: canvas.width, height: 15},
-                    {x: 0, y: 0, width: 15, height: canvas.height},
-                    {x: canvas.width - 15, y: 0, width: 15, height: canvas.height}
-                ];
-                player.x = 50;
-                player.y = 50;
-                items = [{x: 100, y: 100, size: 8, collected: false, glow: 0}];
-                customers = [];
-                powerUps = [];
-                updateDisplay();
-            }
-        }
-        
-        function generateItems() {
-            items = [];
-            // More items for higher levels, but scale reasonably
-            const baseItemCount = 8 + level * 3;
-            const itemCount = Math.min(baseItemCount, 25); // Cap at 25 items
-            
-            let placedItems = 0;
-            let attempts = 0;
-            const maxAttempts = itemCount * 10;
-            
-            while (placedItems < itemCount && attempts < maxAttempts) {
-                const x = Math.random() * (canvas.width - 80) + 40;
-                const y = Math.random() * (canvas.height - 80) + 40;
-                attempts++;
+                const badCustomerRatio = Math.min(0.2 + level * 0.05, 0.7);
                 
-                // Check if position is valid (not in walls, not too close to player)
-                if (!checkWallCollision({x, y, size: 8}) && 
-                    (Math.abs(x - player.x) > 50 || Math.abs(y - player.y) > 50)) {
-                    
-                    // Spread items more evenly across the store
-                    let tooClose = false;
-                    for (let existingItem of items) {
-                        if (Math.abs(x - existingItem.x) < 30 && Math.abs(y - existingItem.y) < 30) {
-                            tooClose = true;
-                            break;
-                        }
-                    }
-                    
-                    if (!tooClose) {
-                        items.push({
-                            x, y, 
-                            size: Math.max(6, canvas.width * 0.015), 
-                            collected: false,
-                            glow: Math.random() * Math.PI * 2
-                        });
-                        placedItems++;
-                    }
-                }
-            }
-            
-            // Ensure we have at least some items even if placement is difficult
-            if (placedItems < 5) {
-                for (let i = 0; i < 5; i++) {
-                    const x = 50 + i * 40;
-                    const y = 50;
-                    if (!checkWallCollision({x, y, size: 8})) {
-                        items.push({
-                            x, y, 
-                            size: Math.max(6, canvas.width * 0.015), 
-                            collected: false,
-                            glow: Math.random() * Math.PI * 2
-                        });
-                    }
-                }
-            }
-        }
-        
-        function generateCustomers() {
-            customers = [];
-            const customerTypes = [
-                {type: 'good', color: '#4ade80', harmful: false, speed: 1},
-                {type: 'karen', color: '#ef4444', harmful: true, speed: 1.5},
-                {type: 'darren', color: '#f97316', harmful: true, speed: 1.2},
-                {type: 'thief', color: '#a855f7', harmful: true, speed: 1.8}
-            ];
-            
-            // Level-based customer count: Level 1 = 1-2, Level 2 = 2-3, Level 3 = 3-4, etc.
-            const minCustomers = level;
-            const maxCustomers = level + 1;
-            const customerCount = Math.floor(Math.random() * (maxCustomers - minCustomers + 1)) + minCustomers;
-            
-            // Increase bad customer ratio as levels progress
-            const badCustomerRatio = Math.min(0.2 + level * 0.06, 0.8);
-            
-            let placedCustomers = 0;
-            let attempts = 0;
-            const maxAttempts = customerCount * 15;
-            
-            while (placedCustomers < customerCount && attempts < maxAttempts) {
-                const x = Math.random() * (canvas.width - 80) + 40;
-                const y = Math.random() * (canvas.height - 80) + 40;
-                attempts++;
-                
-                if (!checkWallCollision({x, y, size: 15}) && 
-                    (Math.abs(x - player.x) > 80 || Math.abs(y - player.y) > 80)) {
+                for (let i = 0; i < customerCount; i++) {
+                    const pos = maze.getRandomAccessiblePosition(16);
                     
                     let customerType;
                     if (Math.random() < badCustomerRatio) {
-                        customerType = customerTypes[Math.floor(Math.random() * 3) + 1];
+                        customerType = types[Math.floor(Math.random() * 3) + 1];
                     } else {
-                        customerType = customerTypes[0];
+                        customerType = types[0];
                     }
                     
-                    customers.push(new Customer(x, y, customerType));
-                    placedCustomers++;
+                    customers.push(new Customer(pos.x, pos.y, customerType));
                 }
-            }
-            
-            // Ensure we have at least one customer
-            if (customers.length === 0) {
-                const safePos = findSafeStartPosition();
-                customers.push(new Customer(safePos.x + 100, safePos.y + 50, customerTypes[0]));
+                
+                return customers;
             }
         }
         
-        function generatePowerUps() {
-            powerUps = [];
-            const powerUpCount = Math.max(1, Math.floor(level / 2));
-            
-            let placedPowerUps = 0;
-            let attempts = 0;
-            const maxAttempts = powerUpCount * 15;
-            
-            while (placedPowerUps < powerUpCount && attempts < maxAttempts) {
-                const x = Math.random() * (canvas.width - 80) + 40;
-                const y = Math.random() * (canvas.height - 80) + 40;
-                attempts++;
+        class PowerUpManager {
+            static generate(level, maze) {
+                const powerUps = [];
+                const powerUpCount = Math.max(1, Math.floor(level / 2));
                 
-                // Ensure power-ups are in accessible areas
-                if (!checkWallCollision({x, y, size: 10}) && 
-                    (Math.abs(x - player.x) > 100 || Math.abs(y - player.y) > 100)) {
-                    
-                    // Make sure power-ups aren't too close to each other
-                    let tooClose = false;
-                    for (let existingPowerUp of powerUps) {
-                        if (Math.abs(x - existingPowerUp.x) < 60 && Math.abs(y - existingPowerUp.y) < 60) {
-                            tooClose = true;
-                            break;
+                const types = [
+                    {
+                        name: 'speed',
+                        color: '#00ff88',
+                        icon: '💨',
+                        duration: 300,
+                        activate: (player) => { 
+                            player.originalSpeed = player.speed;
+                            player.speed = 7; 
+                        },
+                        deactivate: (player) => { 
+                            player.speed = player.originalSpeed || 5;
+                            delete player.originalSpeed;
                         }
+                    },
+                    {
+                        name: 'shield',
+                        color: '#4fc3f7',
+                        icon: '🛡️',
+                        duration: 400,
+                        activate: (player) => { 
+                            player.powerUpInvulnerable = true;
+                            player.invulnerable = true; 
+                        },
+                        deactivate: (player) => { 
+                            if (player.powerUpInvulnerable) {
+                                player.powerUpInvulnerable = false;
+                                // Only remove invulnerability if it was from power-up
+                                if (player.invulnerableTimer <= 0) {
+                                    player.invulnerable = false;
+                                }
+                            }
+                        }
+                    },
+                    {
+                        name: 'lightning',
+                        color: '#ffeb3b',
+                        icon: '⚡',
+                        duration: 1,
+                        activate: (player) => {
+                            Game.entities.customers = Game.entities.customers.filter(c => {
+                                if (c.harmful) {
+                                    Game.createParticles(c.x, c.y, '#ffeb3b', 10);
+                                    Game.state.score += 50;
+                                    return false;
+                                }
+                                return true;
+                            });
+                        },
+                        deactivate: () => {}
+                    },
+                    {
+                        name: 'star',
+                        color: '#ff9800',
+                        icon: '🌟',
+                        duration: 1,
+                        activate: () => {
+                            Game.state.combo += 5;
+                            Game.state.score += 100;
+                            Game.state.comboTimer = 150; // Extend combo timer
+                        },
+                        deactivate: () => {}
                     }
-                    
-                    if (!tooClose) {
-                        const powerUpType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-                        powerUps.push({
-                            x, y,
-                            size: Math.max(8, canvas.width * 0.02),
-                            collected: false,
-                            ...powerUpType,
-                            pulseTimer: Math.random() * Math.PI * 2
-                        });
-                        placedPowerUps++;
-                    }
+                ];
+                
+                for (let i = 0; i < powerUpCount; i++) {
+                    const pos = maze.getRandomAccessiblePosition(12);
+                    const type = types[Math.floor(Math.random() * types.length)];
+                    powerUps.push(new PowerUp(pos.x, pos.y, type));
                 }
+                
+                return powerUps;
             }
         }
         
-        function checkWallCollision(entity) {
-            try {
-                if (!entity || !walls || walls.length === 0) return false;
-                
-                for (const wall of walls) {
-                    if (wall && 
-                        entity.x - entity.size/2 < wall.x + wall.width &&
-                        entity.x + entity.size/2 > wall.x &&
-                        entity.y - entity.size/2 < wall.y + wall.height &&
-                        entity.y + entity.size/2 > wall.y) {
-                        return true;
-                    }
-                }
-                return false;
-            } catch(e) {
-                return false;
-            }
-        }
-        
-        function checkCollision(a, b) {
-            return Math.abs(a.x - b.x) < (a.size + b.size) / 2 &&
-                   Math.abs(a.y - b.y) < (a.size + b.size) / 2;
-        }
-        
-        function updatePlayer() {
-            // Update trail
-            player.trail.push({x: player.x, y: player.y});
-            if (player.trail.length > 6) {
-                player.trail.shift();
-            }
-            
-            // Update invulnerability
-            if (player.invulnerable && !activePowerUp) {
-                player.invulnerableTimer--;
-                if (player.invulnerableTimer <= 0) {
-                    player.invulnerable = false;
-                }
-            }
-            
-            const newX = player.x + player.direction.x * player.speed;
-            const newY = player.y + player.direction.y * player.speed;
-            
-            if (!checkWallCollision({x: newX, y: player.y, size: player.size})) {
-                player.x = newX;
-            }
-            if (!checkWallCollision({x: player.x, y: newY, size: player.size})) {
-                player.y = newY;
-            }
-            
-            // Keep player in bounds
-            player.x = Math.max(player.size/2, Math.min(canvas.width - player.size/2, player.x));
-            player.y = Math.max(player.size/2, Math.min(canvas.height - player.size/2, player.y));
-        }
-        
-        function updatePowerUps() {
-            if (activePowerUp) {
-                powerUpTimer--;
-                if (powerUpTimer <= 0) {
-                    activePowerUp = null;
-                    player.speed = 4;
-                    player.invulnerable = false;
-                    document.getElementById('powerUpIndicator').style.display = 'none';
-                }
-            }
-            
-            powerUps.forEach(powerUp => {
-                powerUp.pulseTimer += 0.08;
-            });
-        }
-        
-        function checkCollisions() {
-            // Item collection
-            items.forEach(item => {
-                if (!item.collected && checkCollision(player, item)) {
-                    item.collected = true;
-                    score += 10 + combo;
-                    combo++;
-                    comboTimer = 90;
-                    createParticles(item.x, item.y, '#fbbf24', 4);
-                    playSound('collect');
-                    updateDisplay();
-                }
-            });
-            
-            // Power-up collection
-            powerUps.forEach(powerUp => {
-                if (!powerUp.collected && checkCollision(player, powerUp)) {
-                    powerUp.collected = true;
-                    activePowerUp = powerUp;
-                    powerUpTimer = powerUp.duration;
-                    powerUp.effect();
-                    createParticles(powerUp.x, powerUp.y, powerUp.color, 6);
-                    playSound('powerup');
-                    document.getElementById('powerUpIndicator').style.display = 'block';
-                    document.getElementById('powerUpIndicator').innerHTML = 
-                        `${powerUp.icon} ${powerUp.type.toUpperCase()}`;
-                }
-            });
-            
-            // Customer collisions
-            const currentTime = Date.now();
-            customers.forEach(customer => {
-                if (checkCollision(player, customer) && customer.type.harmful && 
-                    !player.invulnerable && currentTime - customer.lastHit > 1500) {
-                    customer.lastHit = currentTime;
-                    health--;
-                    combo = 0;
-                    screenShake = 10;
-                    player.invulnerable = true;
-                    player.invulnerableTimer = 90;
-                    createParticles(player.x, player.y, '#ef4444', 8);
-                    playSound('hit');
-                    document.querySelector('.game-container').classList.add('shake');
-                    setTimeout(() => {
-                        document.querySelector('.game-container').classList.remove('shake');
-                    }, 300);
-                    updateDisplay();
-                    
-                    if (health <= 0) {
-                        gameOver();
-                    }
-                }
-            });
-            
-            // Combo timer
-            if (comboTimer > 0) {
-                comboTimer--;
-            } else {
-                combo = 0;
-            }
-            
-            // Level completion
-            if (items.every(item => item.collected)) {
-                levelComplete();
-            }
-        }
-        
-        function updateParticles() {
-            particles = particles.filter(particle => {
-                particle.update();
-                return particle.life > 0;
-            });
-        }
-        
-        function draw() {
-            try {
-                // Screen shake effect
-                ctx.save();
-                if (screenShake > 0) {
-                    ctx.translate(
-                        Math.random() * screenShake - screenShake / 2,
-                        Math.random() * screenShake - screenShake / 2
-                    );
-                    screenShake--;
-                }
-                
-                // Clear canvas
-                const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, 
-                                                         canvas.width/2, canvas.height/2, canvas.width/2);
-                gradient.addColorStop(0, '#1a1a2e');
-                gradient.addColorStop(1, '#0f0f23');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw walls
-                ctx.fillStyle = '#4a5568';
-                if (walls && walls.length > 0) {
-                    walls.forEach(wall => {
-                        if (wall) {
-                            ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
-                        }
-                    });
-                }
-                
-                // Draw player trail
-                if (player.trail && player.trail.length > 0) {
-                    player.trail.forEach((point, index) => {
-                        ctx.globalAlpha = index / player.trail.length * 0.4;
-                        ctx.fillStyle = '#60a5fa';
-                        ctx.beginPath();
-                        ctx.arc(point.x, point.y, player.size * 0.2, 0, Math.PI * 2);
-                        ctx.fill();
-                    });
-                }
-                ctx.globalAlpha = 1;
-                
-                // Draw items
-                if (items && items.length > 0) {
-                    items.forEach(item => {
-                        if (!item.collected) {
-                            item.glow += 0.08;
-                            const glowSize = 1 + Math.sin(item.glow) * 0.5;
-                            
-                            ctx.fillStyle = '#fbbf24';
-                            ctx.beginPath();
-                            ctx.arc(item.x, item.y, item.size + glowSize, 0, Math.PI * 2);
-                            ctx.fill();
-                            
-                            // Inner sparkle
-                            ctx.fillStyle = '#fef3c7';
-                            ctx.beginPath();
-                            ctx.arc(item.x - 1, item.y - 1, 1, 0, Math.PI * 2);
-                            ctx.fill();
-                        }
-                    });
-                }
-                
-                // Draw power-ups
-                if (powerUps && powerUps.length > 0) {
-                    powerUps.forEach(powerUp => {
-                        if (!powerUp.collected) {
-                            const pulseSize = 1 + Math.sin(powerUp.pulseTimer) * 2;
-                            
-                            ctx.fillStyle = powerUp.color;
-                            ctx.beginPath();
-                            ctx.arc(powerUp.x, powerUp.y, powerUp.size + pulseSize, 0, Math.PI * 2);
-                            ctx.fill();
-                            
-                            // Icon
-                            const fontSize = Math.max(10, canvas.width * 0.025);
-                            ctx.font = `${fontSize}px Arial`;
-                            ctx.textAlign = 'center';
-                            ctx.fillStyle = 'white';
-                            ctx.fillText(powerUp.icon, powerUp.x, powerUp.y + fontSize/3);
-                        }
-                    });
-                }
-                
-                // Draw customers
-                if (customers && customers.length > 0) {
-                    customers.forEach(customer => {
-                        if (customer && customer.draw) {
-                            customer.draw();
-                        }
-                    });
-                }
-                
-                // Draw player (diamond)
-                ctx.save();
-                ctx.translate(player.x, player.y);
-                ctx.rotate(Math.PI / 4);
-                
-                // Invulnerability effect
-                if (player.invulnerable) {
-                    ctx.globalAlpha = 0.5 + Math.sin(Date.now() * 0.02) * 0.3;
-                }
-                
-                const gradient2 = ctx.createLinearGradient(-10, -10, 10, 10);
-                gradient2.addColorStop(0, '#93c5fd');
-                gradient2.addColorStop(0.5, '#60a5fa');
-                gradient2.addColorStop(1, '#1d4ed8');
-                
-                ctx.fillStyle = gradient2;
-                ctx.fillRect(-player.size/2, -player.size/2, player.size, player.size);
-                
-                // Diamond shine
-                ctx.fillStyle = '#e0f2fe';
-                ctx.fillRect(-player.size/4, -player.size/2, player.size/8, player.size/3);
-                ctx.fillRect(-player.size/2, -player.size/4, player.size/3, player.size/8);
-                
-                ctx.restore();
-                
-                // Draw particles
-                if (particles && particles.length > 0) {
-                    particles.forEach(particle => {
-                        if (particle && particle.draw) {
-                            particle.draw();
-                        }
-                    });
-                }
-                
-                ctx.restore();
-            } catch(e) {
-                // Fallback simple drawing
-                ctx.fillStyle = '#1a1a2e';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Simple player
-                ctx.fillStyle = '#60a5fa';
-                ctx.beginPath();
-                ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        
-        function updateDisplay() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('level').textContent = level;
-            document.getElementById('health').textContent = '❤️'.repeat(health);
-            document.getElementById('combo').textContent = combo;
-        }
-        
-        function showStartScreen() {
-            const startScreen = document.getElementById('startScreen');
-            startScreen.style.display = 'flex';
-            startScreen.classList.add('show');
-            gameStarted = false;
-            gameRunning = false;
-        }
-        
-        function startGame() {
-            // Hide start screen
-            const startScreen = document.getElementById('startScreen');
-            startScreen.style.display = 'none';
-            startScreen.classList.remove('show');
-            
-            // Initialize audio
-            initAudio();
-            
-            // Start game
-            gameStarted = true;
-            gameRunning = true;
-            
-            // Initialize game elements
-            init();
-            
-            // Start game loop
-            gameLoop();
-        }
-        
-        function gameOver() {
-            gameRunning = false;
-            const gameOverScreen = document.getElementById('gameOver');
-            gameOverScreen.classList.add('show');
-            gameOverScreen.style.display = 'flex';
-            document.getElementById('finalScore').textContent = score;
-            document.getElementById('finalLevel').textContent = level;
-        }
-        
-        function levelComplete() {
-            gameRunning = false;
-            const bonusPoints = health * 30 + combo * 5;
-            score += bonusPoints;
-            playSound('levelup');
-            const levelCompleteScreen = document.getElementById('levelComplete');
-            levelCompleteScreen.classList.add('show');
-            levelCompleteScreen.style.display = 'flex';
-            document.getElementById('bonusPoints').textContent = bonusPoints;
-        }
-        
-        function nextLevel() {
-            level++;
-            health = Math.min(health + 1, 5);
-            combo = 0;
-            init();
-            gameRunning = true;
-            updateDisplay();
-            const levelCompleteScreen = document.getElementById('levelComplete');
-            levelCompleteScreen.style.display = 'none';
-            levelCompleteScreen.classList.remove('show');
-        }
-        
-        function restartGame() {
-            gameRunning = true;
-            score = 0;
-            level = 1;
-            health = 3;
-            combo = 0;
-            player.direction = { x: 0, y: 0 };
-            player.trail = [];
-            player.invulnerable = false;
-            particles = [];
-            activePowerUp = null;
-            
-            init();
-            updateDisplay();
-            
-            const gameOverScreen = document.getElementById('gameOver');
-            gameOverScreen.style.display = 'none';
-            gameOverScreen.classList.remove('show');
-            document.getElementById('powerUpIndicator').style.display = 'none';
-        }
-        
-        function gameLoop() {
-            if (!gameStarted) return;
-            
-            if (gameRunning) {
-                updatePlayer();
-                customers.forEach(customer => customer.update());
-                updatePowerUps();
-                checkCollisions();
-                updateParticles();
-            }
-            
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-        
-        // Controls
-        const keys = {};
-        
-        document.addEventListener('keydown', (e) => {
-            keys[e.code] = true;
-            updatePlayerDirection();
-            e.preventDefault();
-        });
-        
-        document.addEventListener('keyup', (e) => {
-            keys[e.code] = false;
-            updatePlayerDirection();
-            e.preventDefault();
-        });
-        
-        function updatePlayerDirection() {
-            if (!gameRunning) return;
-            
-            player.direction.x = 0;
-            player.direction.y = 0;
-            
-            if (keys['ArrowLeft'] || keys['KeyA']) player.direction.x = -1;
-            if (keys['ArrowRight'] || keys['KeyD']) player.direction.x = 1;
-            if (keys['ArrowUp'] || keys['KeyW']) player.direction.y = -1;
-            if (keys['ArrowDown'] || keys['KeyS']) player.direction.y = 1;
-            
-            // Normalize diagonal movement
-            if (player.direction.x !== 0 && player.direction.y !== 0) {
-                player.direction.x *= 0.707;
-                player.direction.y *= 0.707;
-            }
-        }
-        
-        // Touch controls
-        let touchStartX, touchStartY;
-        let currentDirection = null;
-        
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }, { passive: false });
-        
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (!gameRunning || !touchStartX || !touchStartY) return;
-            
-            const touchX = e.touches[0].clientX;
-            const touchY = e.touches[0].clientY;
-            const deltaX = touchX - touchStartX;
-            const deltaY = touchY - touchStartY;
-            const minSwipeDistance = 20;
-            
-            if (Math.abs(deltaX) > minSwipeDistance || Math.abs(deltaY) > minSwipeDistance) {
-                if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                    player.direction.x = deltaX > 0 ? 1 : -1;
-                    player.direction.y = 0;
-                } else {
-                    player.direction.y = deltaY > 0 ? 1 : -1;
-                    player.direction.x = 0;
-                }
-            }
-        }, { passive: false });
-        
-        canvas.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            touchStartX = null;
-            touchStartY = null;
-        }, { passive: false });
-        
-        // D-pad controls
-        document.querySelectorAll('.dpad-btn').forEach(btn => {
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (!gameRunning) return;
-                
-                const direction = btn.dataset.direction;
-                player.direction = { x: 0, y: 0 };
-                
-                switch(direction) {
-                    case 'up': player.direction.y = -1; break;
-                    case 'down': player.direction.y = 1; break;
-                    case 'left': player.direction.x = -1; break;
-                    case 'right': player.direction.x = 1; break;
-                }
-                currentDirection = direction;
-            }, { passive: false });
-            
-            btn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                if (currentDirection === btn.dataset.direction) {
-                    player.direction = { x: 0, y: 0 };
-                    currentDirection = null;
-                }
-            }, { passive: false });
-        });
-        
-        // Window resize handler
-        window.addEventListener('resize', () => {
-            if (gameStarted) {
-                resizeCanvas();
-                walls = generateMaze();
-            }
-        });
-        
-        // Initialize
-        function showStartScreen() {
-            const startScreen = document.getElementById('startScreen');
-            startScreen.style.display = 'flex';
-            startScreen.classList.add('show');
-            gameStarted = false;
-            gameRunning = false;
-        }
-        
-        // Window load handler for iPhone
+        // Initialize the game when page loads
         window.addEventListener('load', () => {
-            setTimeout(() => {
-                resizeCanvas();
-                showStartScreen();
-            }, 100);
+            setTimeout(() => Game.init(), 100);
         });
         
-        // Document ready fallback
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(() => {
-                    resizeCanvas();
-                    showStartScreen();
-                }, 100);
+                setTimeout(() => Game.init(), 100);
             });
         } else {
-            setTimeout(() => {
-                resizeCanvas();
-                showStartScreen();
-            }, 100);
+            setTimeout(() => Game.init(), 100);
         }
     </script>
 </body>
